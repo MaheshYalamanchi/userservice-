@@ -8,8 +8,6 @@ const hasspassword =crypto.createHmac("sha1", salt).update(password).digest("hex
 var locked = Boolean(params.params.locked);
 var secure = Boolean(params.params.secure);
     try {
-        console.log(params.params.username)
-        console.log(params.params.labels)
         var createdAt = new Date()
         var formData={
             "_id" : params.params.username,

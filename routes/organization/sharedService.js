@@ -14,7 +14,6 @@ let orgEntery = async (params) => {
         "updatedBy":params.username
 
     }
-    console.log(jsonData)
       var getdata = {
           url: process.env.MONGO_URI,
           client: "org",
@@ -22,7 +21,6 @@ let orgEntery = async (params) => {
           query: jsonData
       };
       let responseData = await invoke.makeHttpCall("post", "write", getdata);
-      console.log(responseData);
       if(responseData && responseData.data&&responseData.data.iid){
         var newData = {
             params:params,
