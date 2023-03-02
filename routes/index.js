@@ -27,7 +27,7 @@ module.exports = function (params) {
   app.get('/roleget', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.creationget()
+              let result = await sharedSevices.roleget()
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
@@ -45,7 +45,7 @@ module.exports = function (params) {
   app.put('/roleupdate', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.roleput(req.body)
+              let result = await sharedSevices.roleupdate(req.body)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
@@ -63,7 +63,7 @@ module.exports = function (params) {
   app.delete('/roledelete', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.deleterole(req.body)
+              let result = await sharedSevices.roledelete(req.body)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
@@ -78,10 +78,10 @@ module.exports = function (params) {
         }
   });
 
-  app.post('/creategroup', async(req, res) => {
+  app.post('/groupcreate', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.creategroup(req.body)
+              let result = await sharedSevices.groupcreate(req.body)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {

@@ -5,20 +5,20 @@ module.exports = function (params) {
 
 app.post("/organization", async (req, res) => {
   "use strict";
-  try {
+  try {  
       let result = await sharedSevices.orgEntery(req.body)
       if (result && result.success) {
-        res.status(200).send(result.message);
-      } else {
-        res.status(200).send("data not inserted");
-      }
-  }catch(error){
-    if (error && error.code == 'ECONNREFUSED') {
-        return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
-    } else {
-        return { success: false, message: error }
+        app.http.customResponse(res,{ success: true, message: result.message }, 200);
+      }  else {
+        app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+        } 
+    } catch (error) {
+        if (error && error.message) {
+            app.http.customResponse(res, { success: false, message: error.message }, 400)
+        } else {
+            app.http.customResponse(res, { success: false, message: error }, 400)
+        }
     }
-  }
 });
 app.get("/getOrgDetails", async (req, res) => {
 
@@ -26,53 +26,53 @@ app.get("/getOrgDetails", async (req, res) => {
     try {
         let result = await sharedSevices.OrgDetails(req)
         if (result && result.success) {
-            res.status(200).send(result.message);
+            app.http.customResponse(res,{ success: true, message: result.message }, 200);
+          }  else {
+            app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+        } 
+    } catch (error) {
+        if (error && error.message) {
+            app.http.customResponse(res, { success: false, message: error.message }, 400)
         } else {
-            res.status(200).send("data not found");
-        }
-    }catch(error){
-        if (error && error.code == 'ECONNREFUSED') {
-            return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
-        } else {
-            return { success: false, message: error }
+            app.http.customResponse(res, { success: false, message: error }, 400)
         }
     }
 });
-app.put("/org/:userId", async (req, res) => {
+app.put("/orguserId/:id", async (req, res) => {
     "use strict";
     try {
         if (req && req.body) {
-            let result = await sharedSevices.orgEdit(req);
+            let result = await sharedSevices.orgEdit(req.body);
             if (result && result.success) {
-                res.status(200).send(result.message);
-            } else {
-                res.status(200).send("data not found");
-            }
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              }  else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
         } else {
             app.http.customResponse(res, { success: false, message: 'requset body error' }, 200);
         }
-    }catch(error){
-        if (error && error.code == 'ECONNREFUSED') {
-            return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } catch (error) {
+        if (error && error.message) {
+            app.http.customResponse(res, { success: false, message: error.message }, 400)
         } else {
-            return { success: false, message: error }
+            app.http.customResponse(res, { success: false, message: error }, 400)
         }
     }
 });
 app.delete("/org/:UserId", async (req, res) => {
     "use strict";
     try {
-        let result = await sharedSevices.orgDelete(req.params)
+        let result = await sharedSevices.orgDelete(req.body)
         if (result && result.success) {
-            res.status(200).send(result.message);
+            app.http.customResponse(res,{ success: true, message: result.message }, 200);
+          }  else {
+            app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+        } 
+    } catch (error) {
+        if (error && error.message) {
+            app.http.customResponse(res, { success: false, message: error.message }, 400)
         } else {
-            res.status(200).send("data not found");
-        }
-    }catch(error){
-        if (error && error.code == 'ECONNREFUSED') {
-            return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
-        } else {
-            return { success: false, message: error }
+            app.http.customResponse(res, { success: false, message: error }, 400)
         }
     }
 });

@@ -30,7 +30,7 @@ let rolecreation = async (params) => {
   }
 };
 
-let creationget = async () => {
+let roleget = async () => {
   try {
       var getdata = {
         database:"proctor",
@@ -54,7 +54,7 @@ let creationget = async () => {
   }
 };
 
-let roleput = async (params) => {
+let roleupdate = async (params) => {
   try {
       var getdata = {
         database:"proctor",
@@ -81,7 +81,7 @@ let roleput = async (params) => {
   }
 };
 
-let deleterole = async (params) => {
+let roledelete = async (params) => {
   try {
       var getdata = {
         database:"proctor",
@@ -108,7 +108,7 @@ let deleterole = async (params) => {
   }
 };
 
-let creategroup = async (params) => {
+let groupcreate = async (params) => {
   try {
       const data =  {
         "groupname": params.groupname,
@@ -217,10 +217,10 @@ let groupdelete = async (params) => {
 
 module.exports = {
   rolecreation,
-  creationget,
-  roleput,
-  deleterole,
-  creategroup,
+  roleget,
+  roleupdate,
+  roledelete,
+  groupcreate,
   groupget,
   groupupdate,
   groupdelete
