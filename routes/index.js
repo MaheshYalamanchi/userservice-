@@ -23,7 +23,6 @@ module.exports = function (params) {
             }
         }
   });
-
   app.get('/roleget', async(req, res) => {
     "use strict";
           try {
@@ -41,7 +40,6 @@ module.exports = function (params) {
             }
         }
   });
-
   app.put('/roleupdate', async(req, res) => {
     "use strict";
           try {
@@ -59,7 +57,6 @@ module.exports = function (params) {
             }
         }
   });
-
   app.delete('/roledelete', async(req, res) => {
     "use strict";
           try {
@@ -77,7 +74,6 @@ module.exports = function (params) {
             }
         }
   });
-
   app.post('/groupcreate', async(req, res) => {
     "use strict";
           try {
@@ -95,7 +91,6 @@ module.exports = function (params) {
             }
         }
   });
-
   app.get('/groupget', async(req, res) => {
     "use strict";
           try {
@@ -130,7 +125,6 @@ module.exports = function (params) {
             }
         }
   });
-
   app.delete('/groupdelete', async(req, res) => {
     "use strict";
           try {
@@ -148,5 +142,73 @@ module.exports = function (params) {
             }
         }
   });
+ app.post('/menucreate', async(req, res) => {
+    "use strict";
+          try {
+              let result = await sharedSevices.menucreate(req.body)
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              }  else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+        }
+  });
+  app.get('/menuget', async(req, res) => {
+    "use strict";
+          try {
+              let result = await sharedSevices.menuget()
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              }  else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+        }
+  });
 
+  app.put('/menuupdate', async(req, res) => {
+    "use strict";
+          try {
+              let result = await sharedSevices.menuupdate(req.body)
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              }  else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+        }
+  });
+  app.delete('/menudelete', async(req, res) => {
+    "use strict";
+          try {
+              let result = await sharedSevices.menudelete(req.body)
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              }  else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
+          }catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+        }
+  });
 }

@@ -10,6 +10,7 @@ let orgEntery = async (params) => {
             "updatedBy": params.updatedBy,
         }
         var getdata = {
+            url:process.env.MONGO_URI,
             database: "proctor",
             model: "org",
             docType: 0,
@@ -41,6 +42,7 @@ let orgEntery = async (params) => {
 let OrgDetails = async () => {
     try {
         var getdata = {
+            url:process.env.MONGO_URI,
             database: "proctor",
             model: "org",
             docType: 1,
@@ -64,6 +66,7 @@ let OrgDetails = async () => {
 let orgEdit = async (params) => {
     try {
         var postdata = {
+            url:process.env.MONGO_URI,
             database: "proctor",
             model: "org",
             docType: 0,
@@ -89,6 +92,7 @@ let orgEdit = async (params) => {
 let orgDelete = async (params) => {
     try {
         var getdata = {
+            url:process.env.MONGO_URI,
             database: "proctor",
             model: "org",
             docType: 0,
@@ -115,6 +119,7 @@ let orgDelete = async (params) => {
 let getplandetails = async () => {
     try {
         var getdata = {
+            url:process.env.MONGO_URI,
             database: "proctor",
             model: "plan",
             docType: 1,

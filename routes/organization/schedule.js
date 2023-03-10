@@ -35,6 +35,7 @@ let newUserSave = async (params) => {
             "os":""
         }
         var getdata = {
+            url:process.env.MONGO_URI,
             database: "proctor",
             model: "users",
             docType: 0,
@@ -116,6 +117,7 @@ let OrgId = async (params) => {
             "thumbnail": params.params.thumbnail
         }
         var postdata = {
+            url:process.env.MONGO_URI,
             database: "proctor",
             model: "users",
             docType: 0,
