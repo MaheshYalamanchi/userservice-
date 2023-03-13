@@ -1,4 +1,5 @@
 const invoke = require("../lib/http/invoke");
+const schedule = require("./organization/schedule")
 const globalMsg = require('../configuration/messages/message');
 
 let rolecreation = async (params) => {
@@ -234,9 +235,18 @@ let menucreate = async (params) => {
       query: data
     };
     let responseData = await invoke.makeHttpCall("post", "write", postdata);
-    if (responseData && responseData.data && responseData.data.statusMessage) {
-      return { success: true, message: responseData.data.statusMessage }
-    } else {
+    if (responseData && responseData.data && responseData.data.statusMessage._id) {
+      var newData={
+          recivedData:params,
+          getResult:responseData.data.statusMessage,
+      }
+      let result = await schedule.newusermenu(newData)
+      if (result && result.success) {
+          return{ success: true, message: result.message }
+        }  else {
+          return{ sucess: false, message :'Record inserted failed'}
+          } 
+  } else {
       return { success: false, message: 'Data Not inserted' }
     }
   }
@@ -326,6 +336,49 @@ let menudelete = async (params) => {
     }
   }
 };
+let getmenubasedonrole = async (params) => {
+  try {
+    var getdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "role",
+      docType: 1,
+      query: [
+        {
+          "$addFields": { "test": { "$toString": "$_id" } }
+        },
+        {
+           "$match": { "test": params.roleid }
+        },
+        {
+          $lookup:
+            {
+              from: "menu",
+              localField: "menuId",
+              foreignField: "_id",
+              as: "menu"
+            }
+        },
+        {
+          "$project":{"menuId" : 0,"test" : 0}
+        }
+      ]
+    };
+    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+    if (responseData && responseData.data && responseData.data.statusMessage) {
+      return { success: true, message:responseData.data.statusMessage }
+    } else {
+      return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleget,
@@ -338,5 +391,6 @@ module.exports = {
   menucreate,
   menuget,
   menuupdate,
-  menudelete
+  menudelete,
+  getmenubasedonrole
 }

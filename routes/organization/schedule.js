@@ -55,6 +55,61 @@ let newUserSave = async (params) => {
         }
     }
 };
+let newusermenu = async (params) => {
+    var buffer = crypto.randomBytes(32);
+    const salt = buffer.toString('base64')
+    var Password = params.recivedData.password
+    const hasspassword = crypto.createHmac("sha1", salt).update(Password).digest("hex");
+    var locked = Boolean(params.locked);
+    var secure = Boolean(params.secure);
+    try {
+        var formData = {
+            "_id": params.recivedData.username,
+            "labels": params.recivedData.labels,
+            "exclude": [],
+            "rep": [],
+            "salt": salt,
+            "hashedPassword": hasspassword,
+            "username":params.recivedData.username,
+            "nickname":params.recivedData.nickname,
+            "group": params.recivedData.group,
+            "lang": params.recivedData.lang,
+            "locked": locked,
+            "secure": secure,
+            "similar": [],
+            "fullname": params.recivedData.fullname,
+            "role": params.recivedData.role,
+            "roleId": params.recivedData.roleId,
+            "email":params. recivedData.email,
+            "menuname":params.getResult.menuname,
+            "face":"",
+            "passport":"",
+            "useragent":"",
+            "browser":"",
+            "ipaddress":"",
+            "os":""
+        }
+        var getdata = {
+            url:process.env.MONGO_URI,
+            database: "proctor",
+            model: "users",
+            docType: 0,
+            query: formData
+        };
+        let responseData = await invoke.makeHttpCall("post", "insert", getdata);
+        if (responseData && responseData.data && responseData.data.statusMessage) {
+            return { success: true, message: responseData.data.statusMessage }
+        } else {
+            return { success: false, message: 'Data Not inserted' }
+        }
+    } catch (error) {
+        if (error && error.code == 'ECONNREFUSED') {
+            return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+        } else {
+            return { success: false, message: error }
+        }
+    }
+};
 let getUpdatedRecord = async (params) => {
     try {
         var postdata = {
@@ -143,5 +198,6 @@ module.exports = {
     newUserSave,
     getUpdatedRecord,
     orgUserDelete,
-    OrgId
+    OrgId,
+    newusermenu
 }
