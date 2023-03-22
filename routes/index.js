@@ -9,7 +9,7 @@ module.exports = function (params) {
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
-                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+                app.http.customResponse(res, { success: false, message: 'Data Not inserted' }, 200);
             } 
             }else{
               res.send({ success: false, message: 'Please fill mandatory field.' });
@@ -22,15 +22,24 @@ module.exports = function (params) {
             }
         }
   });
-  app.get('/roleget', async(req, res) => {
+  app.get('/api/role', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.roleget()
+            if (req.query && req.query.limit && req.query.filter ) {
+              let result = await sharedSevices.roleget(req);
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
-              }  else {
+              } else {
                 app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-            } 
+              }
+            }else if(req.query && req.query.limit ) {
+              let result = await sharedSevices.roleget(req);
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              } else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+              }
+            }
           } catch (error) {
             if (error && error.message) {
                 app.http.customResponse(res, { success: false, message: error.message }, 400)
