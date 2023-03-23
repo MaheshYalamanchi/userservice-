@@ -84,6 +84,7 @@ let OrgDetails = async (params) => {
                 $project: {_id: 0,orgname:1,thumbnail:1,description:1}
               }
             ]
+            
           };
           let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
           if (responseData && responseData.data && responseData.data.statusMessage) {
