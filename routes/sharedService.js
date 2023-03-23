@@ -397,11 +397,14 @@ let getmenubasedonrole = async (params) => {
               from: "menu",
               localField: "menuId",
               foreignField: "_id",
-              as: "menu"
-            }
+              as: "data"
+            },
         },
         {
-          "$project":{"menuId" : 0,"test" : 0}
+          $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
+        },
+        {
+          "$project":{"_id":0,"menuname":"$data.menuname"}
         }
       ]
     };
@@ -409,7 +412,7 @@ let getmenubasedonrole = async (params) => {
     if (responseData && responseData.data && responseData.data.statusMessage) {
       return { success: true, message:responseData.data.statusMessage }
     } else {
-      return { success: false, message: 'Data Not Found' }
+      return { success: false, message: 'Data Not Found' }  
     }
   }
   catch (error) {

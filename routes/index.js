@@ -182,9 +182,8 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
-
   app.put('/menuupdate', async(req, res) => {
     "use strict";
           try {
@@ -219,11 +218,10 @@ module.exports = function (params) {
             }
         }
   });
-  app.get('/getmenubasedonrole', async(req, res) => {
+  app.get('/api/role/:roleid', async(req, res) => {
     "use strict";
           try {
-            (req.query)
-            let result = await sharedSevices.getmenubasedonrole(req.query)
+            let result = await sharedSevices.getmenubasedonrole(req.params)
             if (result && result.success) {
               app.http.customResponse(res,{ success: true, message: result.message }, 200);
             }  else {
