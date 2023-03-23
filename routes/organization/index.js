@@ -20,29 +20,37 @@ app.post("/organization", async (req, res) => {
         }
     }
 });
-app.get("/getOrgDetails", async (req, res) => {
-
+app.get("/api/org", async (req, res) => {
     "use strict";
     try {
-        let result = await sharedSevices.OrgDetails(req)
-        if (result && result.success) {
+        if (req.query && req.query.limit && req.query.filter ) {
+          let result = await sharedSevices.OrgDetails(req);
+          if (result && result.success) {
             app.http.customResponse(res,{ success: true, message: result.message }, 200);
-          }  else {
+          } else {
             app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-        } 
-    } catch (error) {
+          }
+        }else if(req.query && req.query.limit ) {
+          let result = await sharedSevices.OrgDetails(req);
+          if (result && result.success) {
+            app.http.customResponse(res,{ success: true, message: result.message }, 200);
+          } else {
+            app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+          }
+        }
+      } catch (error) {
         if (error && error.message) {
             app.http.customResponse(res, { success: false, message: error.message }, 400)
         } else {
             app.http.customResponse(res, { success: false, message: error }, 400)
         }
-    }
+      }
 });
 app.put("/orguserId/:id", async (req, res) => {
     "use strict";
     try {
         if (req && req.body) {
-            let result = await sharedSevices.orgEdit(req.body);
+            let result = await sharedSevices.OrgDetails(req.body);
             if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
@@ -76,9 +84,7 @@ app.delete("/org/:UserId", async (req, res) => {
         }
     }
 });
-
 app.get("/getplandetails", async (req, res) => {
-
     "use strict";
     try {   
         let result = await sharedSevices.getplandetails(req)

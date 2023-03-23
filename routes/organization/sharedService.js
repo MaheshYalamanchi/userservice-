@@ -39,22 +39,60 @@ let orgEntery = async (params) => {
         }
     }
 };
-let OrgDetails = async () => {
+let OrgDetails = async (params) => {
     try {
-        var getdata = {
+        if (params.query && params.query.limit && params.query.filter ){
+          var limit = parseInt(params.query.limit);
+          var filter = parseInt(params.query.filter);
+          var getdata = {
             url:process.env.MONGO_URI,
             database: "proctor",
             model: "org",
             docType: 1,
-            query: {}
-        };
-        let responseData = await invoke.makeHttpCall("post", "read", getdata);
-        if (responseData && responseData.data) {
+            query: [
+              {
+                $match: {
+                    $or: [
+                      { orgname: { $regex: params.query.filter, $options: 'i' } },
+                      { thumbnail: { $regex: params.query.filter, $options: 'i' } },
+                      { description: { $regex: params.query.filter, $options: 'i' } }
+                    ]
+                }
+            },
+            {
+              $project: { _id: 0,orgname:1,thumbnail:1,description:1}
+            },
+            {$limit:limit}
+            ]
+          };
+          let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+          if (responseData && responseData.data && responseData.data.statusMessage) {
             return { success: true, message: responseData.data.statusMessage }
-        } else {
-            return { success: false, message: 'Data Not Found' }
+          } else {
+             return { success: false, message: 'Data Not Found' }
+          }
+        }else if (params.query && params.query.limit){
+          var limit = parseInt(params.query.limit);
+          var getdata = {
+            url:process.env.MONGO_URI,
+            database: "proctor",
+            model: "org",
+            docType: 1,
+            query: [
+              {$limit:limit},
+              {
+                $project: {_id: 0,orgname:1,thumbnail:1,description:1}
+              }
+            ]
+          };
+          let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+          if (responseData && responseData.data && responseData.data.statusMessage) {
+            return { success: true, message: responseData.data.statusMessage }
+          } else {
+             return { success: false, message: 'Data Not Found' }
+          }
         }
-    }
+      }
     catch (error) {
         if (error && error.code == 'ECONNREFUSED') {
             return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
@@ -115,7 +153,6 @@ let orgDelete = async (params) => {
         }
     }
 };
-
 let getplandetails = async () => {
     try {
         var getdata = {
@@ -140,8 +177,6 @@ let getplandetails = async () => {
         }
     }
 };
-
-
 module.exports = {
     orgEntery,
     OrgDetails,

@@ -46,7 +46,7 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.put('/roleupdate', async(req, res) => {
     "use strict";
@@ -63,7 +63,7 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.delete('/roledelete', async(req, res) => {
     "use strict";
