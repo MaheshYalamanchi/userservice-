@@ -88,7 +88,13 @@ let OrgDetails = async (params) => {
           };
           let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
           if (responseData && responseData.data && responseData.data.statusMessage) {
-            return { success: true, message: responseData.data.statusMessage }
+            let data = [];
+            for (const child of responseData.data.statusMessage) {
+                    //iterator.imageurl=child.imageurl
+                    child.thumbnail="<img height='40' width ='40' src="+child.thumbnail+">"
+                    data.push(child);         
+            }
+            return { success: true, message: data}
           } else {
              return { success: false, message: 'Data Not Found' }
           }
