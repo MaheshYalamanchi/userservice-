@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,9 +16,9 @@ spec:
       containers:
         - name: userservice
           image: proctordev.azurecr.io/userservice:$tag
-          imagePullPolicy: Always                                                             
+          imagePullPolicy: Always
           ports:
-          - containerPort: 3005
+            - containerPort: 3005
           env:
             - name: DATA_SERVICE_ENDPOINT
               valueFrom:
@@ -75,10 +76,9 @@ spec:
                   name: proctor-dev-env
                   key: BASE_URL
             - name: proctorui
-            valueFrom:
+              valueFrom: null
               secretKeyRef:
                 name: proctor-dev-env
                 key: proctorui
-
       imagePullSecrets:
         - name: mysecret
