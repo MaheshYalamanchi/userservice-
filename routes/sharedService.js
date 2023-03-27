@@ -21,8 +21,8 @@ let rolecreation = async (params) => {
         const data = {
           "rolename": params.rolename,
           "menuId" : params.menuId,
-          "createdBy": params.createdBy,
-          "updatedBy": params.updatedBy
+          "createdBy": "admin",
+          "updatedBy": "admin"
         }
         var postdata = {
           url:process.env.MONGO_URI,
