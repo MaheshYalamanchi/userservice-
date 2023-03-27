@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aiservice
+  name: userservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: aiservice
+      app: userservice
   template:
     metadata:
       labels:
-        app: aiservice
+        app: userservice
     spec:
       containers:
-        - name: aiservice
-          image: proctordev.azurecr.io/aiservice:$tag
+        - name: userservice
+          image: proctordev.azurecr.io/userservice:$tag
           imagePullPolicy: Always                                                             
           ports:
-          - containerPort: 3004
+          - containerPort: 3005
           env:
             - name: DATA_SERVICE_ENDPOINT
               valueFrom:
