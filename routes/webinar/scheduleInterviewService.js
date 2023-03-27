@@ -270,6 +270,32 @@ let storefeedback = async(params) => {
         }
     }
 }
+let jointoroomData = async(params) => {
+    'use strict'
+    try{
+        //console.log(JSON.stringify(params))
+        var postdata = {
+            url:process.env.MONGO_URI,
+            database: "proctor",
+            model: "webinar",
+            docType: 0,
+            query: params
+        };
+        let resultData = await invoke.makeHttpCall("post", "write", postdata);
+        if( resultData.status ==200){
+            return {success:true, message : "webinar joined sucessfully"}
+        }else{
+            return {success:false, message : "Problem in webinar schedule"}
+        }
+    }catch(error){
+        console.log(error)
+        if(error && error.code=='ECONNREFUSED'){
+            return {success:false, message:globalMsg[0].MSG000,status:globalMsg[0].status}
+        }else{
+            return {success:false, message:error}
+        }
+    }
+}
 
 module.exports={
     scheduleInterview,
@@ -279,5 +305,6 @@ module.exports={
     getroom,
     getallroom,
     getchat,
-    storefeedback
+    storefeedback,
+    jointoroomData
 }

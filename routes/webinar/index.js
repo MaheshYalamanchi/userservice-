@@ -2,6 +2,7 @@
 module.exports = function (params) {
     var app = params.app;
     const scheduleInterviewService = require("./scheduleInterviewService");
+    var _=require('lodash')
     app.post('/scheduleinterview',async(req,res)=>{
         try {
             var custCode=req.headers['custcode'];
@@ -168,6 +169,41 @@ module.exports = function (params) {
                 app.logger.info({success: true, message : getroom, request :req.body});
                 app.http.customResponse(res, getroom,  200);
             }
+        } catch (error) {
+            console.log(error)
+            app.logger.error({success: false, message : error, request :req.body});
+            if(error && error.message){
+                app.http.customResponse(res,{success:false, message:error.message}, 400) 
+            }else{
+                app.http.customResponse(res,{success:false, message:error}, 400)
+            }
+        }
+    })
+    //join
+    app.post('/joined',async(req,res)=>{
+        try {
+            let getroom=await scheduleInterviewService.getroom(req.body)
+            //console.log(JSON.stringify(getroom,'lllllllllllllllll'))
+            if(getroom&&getroom.success){
+                if(getroom.message.joined.length){
+                    if(_.find(getroom.message.joined,{email:req.body.join.email})){
+                        app.http.customResponse(res,{success:false,message:"Already joined"}, 200) 
+                    }else{
+                        getroom.message.joined.push(req.body.join)
+                        let jointoroom=await scheduleInterviewService.jointoroomData(getroom.message)
+                        app.http.customResponse(res,jointoroom, 200) 
+                    }
+
+                }else{
+                    getroom.message.joined=[req.body.join]
+                    let jointoroom=await scheduleInterviewService.jointoroomData(getroom.message)
+                    app.http.customResponse(res,jointoroom, 200) 
+                }
+                
+            }else{
+                app.http.customResponse(res,{success:false, message:'Something went wrong!'}, 400) 
+            }
+          
         } catch (error) {
             console.log(error)
             app.logger.error({success: false, message : error, request :req.body});
