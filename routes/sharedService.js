@@ -4,24 +4,44 @@ const globalMsg = require('../configuration/messages/message');
 
 let rolecreation = async (params) => {
   try {
-    const data = {
-      "rolename": params.rolename,
-      "menuId" : params.menuId,
-      "createdBy": params.createdBy,
-      "updatedBy": params.updatedBy
-    }
-    var postdata = {
-      url:process.env.MONGO_URI,
-      database: "proctor",
-      model: "role",
-      docType: 0,
-      query: data
-    };
-    let responseData = await invoke.makeHttpCall("post", "write", postdata);
-    if (responseData && responseData.data && responseData.data.statusMessage._id) {
-      return { success: true, message: "Record inserted sucessfull" }
-    } else {
-      return { success: false, message: 'Data Not inserted' }
+    if(params.rolename){
+      var postdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "role",
+        docType: 1,
+        query: [
+          {
+            "$match": { "rolename": params.rolename }
+         },
+        ]
+      };
+      let returnData = await invoke.makeHttpCall("post", "aggregate", postdata);
+      if (returnData && returnData.data && returnData.data.statusMessage.length==0) {
+        const data = {
+          "rolename": params.rolename,
+          "menuId" : params.menuId,
+          "createdBy": params.createdBy,
+          "updatedBy": params.updatedBy
+        }
+        var postdata = {
+          url:process.env.MONGO_URI,
+          database: "proctor",
+          model: "role",
+          docType: 0,
+          query: data
+        };
+        let responseData = await invoke.makeHttpCall("post", "write", postdata);
+        if (responseData && responseData.data && responseData.data.statusMessage._id) {
+          return { success: true, message: "Record inserted sucessfull" }
+        } else {
+          return { success: false, message: 'Data Not inserted' }
+        }
+      } else {
+        return { success: false, message: 'rolename already exists' }
+      }
+    }else{
+      return { success: false, message: 'rolename is missing' }
     }
   }
   catch (error) {
@@ -182,20 +202,56 @@ let groupcreate = async (params) => {
     }
   }
 };
-let groupget = async () => {
+let groupget = async (params) => {
   try {
-    var getdata = {
-      url:process.env.MONGO_URI,
-      database: "proctor",
-      model: "group",
-      docType: 1,
-      query: {}
-    };
-    let responseData = await invoke.makeHttpCall("post", "read", getdata);
-    if (responseData && responseData.data) {
-      return { success: true, message: responseData.data.statusMessage }
-    } else {
-      return { success: false, message: 'Data Not Found' }
+    if (params.query && params.query.limit && params.query.filter ){
+      var limit = parseInt(params.query.limit);
+      var filter = parseInt(params.query.filter);
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "group",
+        docType: 1,
+        query: [
+          {
+            $match: {
+                $or: [
+                  { groupname: { $regex: params.query.filter, $options: 'i' } },
+                ]
+            }
+        },
+        {
+          $project: { _id: 0,groupname:1}
+        },
+        {$limit:limit}
+        ]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage ) {
+        return { success: true, message: responseData.data.statusMessage }
+      } else {
+         return { success: false, message: 'Data Not Found' }
+      }
+    }else if (params.query && params.query.limit){
+      var limit = parseInt(params.query.limit);
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "group",
+        docType: 1,
+        query: [
+          {$limit:limit},
+          {
+            $project: { _id: 0,groupname:1}
+          }
+        ]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage) {
+        return { success: true, message: responseData.data.statusMessage }
+      } else {
+         return { success: false, message: 'Data Not Found' }
+      }
     }
   }
   catch (error) {
@@ -423,6 +479,60 @@ let getmenubasedonrole = async (params) => {
     }
   }
 };
+let getgroupnamebased = async (params) => {
+  try {
+    var getdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "group",
+      docType: 1,
+      query: [
+        {
+           "$match": { "groupname": params }
+        },
+        {
+          $lookup:
+            {
+              from: "org",
+              localField: "orgId",
+              foreignField: "_id",
+              as: "data"
+            },
+        },
+        {
+          $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
+        },
+        {
+        $lookup:{
+            from: "plan", 
+            localField: "planid", 
+            foreignField: "_id",
+            as: "message"
+        }
+        },
+        {
+          $unwind: { path: "$message" , preserveNullAndEmptyArrays: true }
+        },
+        {
+          "$project":{_id:0,orgname:"$data.orgname",plan:"$message.plan"}
+        }
+      ]
+    };
+    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+    if (responseData && responseData.data && responseData.data.statusMessage) {
+      return { success: true, message:responseData.data.statusMessage }
+    } else {
+      return { success: false, message: 'Data Not Found' }  
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleget,
@@ -436,5 +546,6 @@ module.exports = {
   menuget,
   menuupdate,
   menudelete,
-  getmenubasedonrole
+  getmenubasedonrole,
+  getgroupnamebased
 }
