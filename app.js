@@ -16,12 +16,13 @@ require('dotenv').config()
 
 // var indexRouter = require('./routes/index')
 var indexorg=require('./routes/organization/index');
-
+app.logger=require("./logger/logger");
 
 app.http = require("./lib/util/http");
 app.util = require("./lib/util/parser");
 app.invoke = require("./lib/http/invoke");
 require('./routes/index')({app:app})
+require('./routes/webinar/index')({app:app})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
