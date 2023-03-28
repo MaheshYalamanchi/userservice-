@@ -192,28 +192,31 @@ let getuserdetails = async (params) => {
         model: "org",
         docType: 1,
         query:[
-            {
-              "$addFields": { "test": { "$toString": "$_id" } }
-            },
-            {
-               "$match": { "test":params.params.orgid}
-            },
-            {
-              $lookup:       
-                {
-                  from: "users",
-                  localField: "_id",
-                  foreignField: "OrgId",
-                  as: "data"
-                }
-             },
-            {
-                $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
-            },
-            {
-                "$project":{_id:0,"_id":"$data._id","username":"$data.username","role":"$data.role"}
-            }
-          ]
+          {
+            "$addFields": { "test": { "$toString": "$_id" } }
+          },
+          {
+             "$match": { "test":params.params.orgId}
+          },
+//           {
+//             "$addFields": { "test": { "$toString": "$_id" } }
+//           },
+          {
+            $lookup:       
+              {
+                from: "users",
+                localField: "_id",
+                foreignField: "OrgId",
+                as: "data"
+              }
+           },
+          {
+              $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
+          },
+          {
+              "$project":{_id:0,"_id":"$data._id","username":"$data.username","role":"$data.role"}
+          }
+        ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
       if (responseData && responseData.data && responseData.data.statusMessage) {

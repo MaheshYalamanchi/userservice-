@@ -101,7 +101,7 @@ app.get("/getplandetails", async (req, res) => {
         }
     }
 });
-app.get('api/orguserId/:id', async(req, res) => {
+app.get('/api/org/:orgId', async(req, res) => {
     "use strict";
           try {
             let result = await sharedSevices.getuserdetails(req)
