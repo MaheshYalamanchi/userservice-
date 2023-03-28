@@ -184,10 +184,57 @@ let getplandetails = async () => {
         }
     }
 };
+let getuserdetails = async (params) => {
+    try {
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "org",
+        docType: 1,
+        query:[
+            {
+              "$addFields": { "test": { "$toString": "$_id" } }
+            },
+            {
+               "$match": { "test":params.params.orgid}
+            },
+            {
+              $lookup:       
+                {
+                  from: "users",
+                  localField: "_id",
+                  foreignField: "OrgId",
+                  as: "data"
+                }
+             },
+            {
+                $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
+            },
+            {
+                "$project":{_id:0,"_id":"$data._id","username":"$data.username","role":"$data.role"}
+            }
+          ]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage) {
+        return { success: true, message:responseData.data.statusMessage }
+      } else {
+        return { success: false, message: 'Data Not Found' }  
+      }
+    }
+    catch (error) {
+      if (error && error.code == 'ECONNREFUSED') {
+        return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+      } else {
+        return { success: false, message: error }
+      }
+    }
+  };
 module.exports = {
     orgEntery,
     OrgDetails,
     orgEdit,
     orgDelete,
-    getplandetails
+    getplandetails,
+    getuserdetails
 }
