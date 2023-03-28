@@ -119,14 +119,19 @@ let roleget = async (params) => {
 };
 let roleupdate = async (params) => {
   try {
+    if(params.body.isActive == 1){
+      var isTrueSet  = true;
+    }else{
+      var isTrueSet  = false;
+    }
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "role",
       docType: 0,
-      query: {
-        filter :{"_id": params._id},
-        update:{$set: { rolename: params.rolename }}
+      query: {  
+        filter :{"_id": params.params.roleId},
+        update:{$set: { rolename: params.body.rolename,isActive: isTrueSet }}
       }
     };
     let responseData = await invoke.makeHttpCall("post", "update", getdata);

@@ -48,10 +48,10 @@ module.exports = function (params) {
             }
           }
   });
-  app.put('/roleupdate', async(req, res) => {
+  app.put('/api/role/:roleId', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.roleupdate(req.body)
+              let result = await sharedSevices.roleupdate(req)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
