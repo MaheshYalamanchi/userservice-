@@ -465,7 +465,7 @@ let getmenubasedonrole = async (params) => {
           $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
         },
         {
-          "$project":{"_id":0,"menuname":"$data.menuname"}
+          "$project":{"rolename": 1,"isActive":1,"_id":0,"menuname":"$data.menuname"}
         }
       ]
     };
