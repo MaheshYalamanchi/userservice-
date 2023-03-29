@@ -60,7 +60,7 @@ let OrgDetails = async (params) => {
                 }
             },
             {
-              $project: { _id: 1,orgname:1,thumbnail:1,description:1}
+              $project: { id:"$_id",id: 0,orgname:1,thumbnail:1,description:1}
             },
             {$limit:limit}
             ]
@@ -81,7 +81,7 @@ let OrgDetails = async (params) => {
             query: [
               {$limit:limit},
               {
-                $project: {_id: 1,orgname:1,thumbnail:1,description:1}
+                $project: {id:"$_id",_id: 0,orgname:1,thumbnail:1,description:1}
               }
             ]
             
