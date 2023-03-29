@@ -217,7 +217,7 @@ let getuserdetails = async (params) => {
               $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
           },
           {
-              "$project":{_id:0,"id":"$data._id","username":"$data.username","role":"$data.role","orgname":1,"description":1,"thumbnail":1}
+              "$project":{_id:0,"id":"$data._id","username":"$data.username","role":"$data.role","orgname":1,"description":1,"thumbnail":1,"hashedPassword":"$data.hashedPassword"}
           }
         ]
       };
