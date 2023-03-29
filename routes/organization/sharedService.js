@@ -87,7 +87,6 @@ let OrgDetails = async (params) => {
               {$limit:limit},
               { $sort : { createdAt : -1 } }
             ]
-            
           };
           let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
           if (responseData && responseData.data && responseData.data.statusMessage) {
@@ -218,13 +217,19 @@ let getuserdetails = async (params) => {
               $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
           },
           {
-              "$project":{_id:0,"_id":"$data._id","username":"$data.username","role":"$data.role"}
+              "$project":{_id:0,"id":"$data._id","username":"$data.username","role":"$data.role","orgname":1,"description":1,"thumbnail":1}
           }
         ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
       if (responseData && responseData.data && responseData.data.statusMessage) {
-        return { success: true, message:responseData.data.statusMessage }
+        let data = [];
+            for (const child of responseData.data.statusMessage) {
+                    //iterator.imageurl=child.imageurl
+                    child.thumbnail="<img height='40' width ='40' src="+child.thumbnail+">"
+                    data.push(child);         
+            }
+            return { success: true, message: data}
       } else {
         return { success: false, message: 'Data Not Found' }  
       }
