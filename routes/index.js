@@ -65,10 +65,10 @@ module.exports = function (params) {
             }
           }
   });
-  app.delete('/roledelete', async(req, res) => {
+  app.get('/api/role/delete/:role', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.roledelete(req.body)
+              let result = await sharedSevices.roledelete(req)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {

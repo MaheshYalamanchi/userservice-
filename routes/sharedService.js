@@ -151,19 +151,20 @@ let roleupdate = async (params) => {
 };
 let roledelete = async (params) => {
   try {
+    let B = false
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "role",
       docType: 0,
       query: {
-        "_id": params._id,
-        $set: { isActive: params.isActive }
+        "_id": params.params.role,
+        $set: { isActive: B }
       }
     };
     let responseData = await invoke.makeHttpCall("post", "write", getdata);
     if (responseData && responseData.data && responseData.data.statusMessage) {
-      return { success: true, message: responseData.data.statusMessage }
+      return { success: true, message: "Record updated sucessfull"  }
     } else {
       return { success: false, message: 'Data Not Found' }
     }
