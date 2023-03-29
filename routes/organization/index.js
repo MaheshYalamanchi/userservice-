@@ -67,7 +67,7 @@ app.put("/orguserId/:id", async (req, res) => {
         }
     }
 });
-app.delete("/org/:UserId", async (req, res) => {
+app.delete("/api/org/delete/:org", async (req, res) => {
     "use strict";
     try {
         let result = await sharedSevices.orgDelete(req.body)

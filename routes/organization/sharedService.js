@@ -53,6 +53,7 @@ let OrgDetails = async (params) => {
               {
                 $match: {
                     $or: [
+                      { _id: { $regex: params.query.filter, $options: 'i' } },
                       { orgname: { $regex: params.query.filter, $options: 'i' } },
                       { thumbnail: { $regex: params.query.filter, $options: 'i' } },
                       { description: { $regex: params.query.filter, $options: 'i' } }
@@ -62,7 +63,8 @@ let OrgDetails = async (params) => {
             {
               $project: { id:"$_id",id: 0,orgname:1,thumbnail:1,description:1}
             },
-            {$limit:limit}
+            {$limit:limit},
+            { $sort : { createdAt : -1 } }
             ]
           };
           let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
@@ -79,10 +81,11 @@ let OrgDetails = async (params) => {
             model: "org",
             docType: 1,
             query: [
-              {$limit:limit},
               {
                 $project: {id:"$_id",_id: 0,orgname:1,thumbnail:1,description:1}
-              }
+              },
+              {$limit:limit},
+              { $sort : { createdAt : -1 } }
             ]
             
           };
@@ -136,22 +139,23 @@ let orgEdit = async (params) => {
 };
 let orgDelete = async (params) => {
     try {
-        var getdata = {
-            url:process.env.MONGO_URI,
-            database: "proctor",
-            model: "org",
-            docType: 0,
-            query: {
-                "_id": params._id,
-                $set: { isActive: params.isActive }
-            }
-        };
-        let responseData = await invoke.makeHttpCall("post", "write", getdata);
-        if (responseData && responseData.data && responseData.data.statusMessage) {
-            return { success: true, message: responseData.data.statusMessage }
-        } else {
-            return { success: false, message: 'Data Not Found' }
+      let B = false
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+         model: "org",
+         docType: 0,
+         query: {
+          "_id": params.params.org,
+          $set: { isActive: B }
         }
+      };
+      let responseData = await invoke.makeHttpCall("post", "write", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage) {
+        return { success: true, message: "Record updated sucessfull" }
+      } else {
+        return { success: false, message: 'Data Not Found' }
+      }
     } catch (error) {
         if (error && error.code == 'ECONNREFUSED') {
             return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }

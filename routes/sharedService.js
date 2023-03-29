@@ -78,7 +78,8 @@ let roleget = async (params) => {
         {
           $project: { id: "$_id", _id: 0,rolename:1,createdBy:1,createdAt:1,updatedBy:1,updatedAt:1}
         },
-        {$limit:limit}
+        {$limit:limit},
+        { $sort : { createdAt : -1 } }
         ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
@@ -95,10 +96,11 @@ let roleget = async (params) => {
         model: "role",
         docType: 1,
         query: [
-          {$limit:limit},
           {
             $project: { id: "$_id", _id: 0,rolename:1,createdBy:1,createdAt:1,updatedBy:1,updatedAt:1}
-          }
+          },
+          {$limit:limit},
+          { $sort : { createdAt : -1 } }
         ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
@@ -229,7 +231,8 @@ let groupget = async (params) => {
         {
           $project: { _id: 0,groupname:1}
         },
-        {$limit:limit}
+        {$limit:limit},
+        { $sort : { createdAt : -1 } }
         ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
@@ -246,10 +249,11 @@ let groupget = async (params) => {
         model: "group",
         docType: 1,
         query: [
-          {$limit:limit},
           {
             $project: { _id: 0,groupname:1}
-          }
+          },
+          {$limit:limit},
+          { $sort : { createdAt : -1 } }
         ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
