@@ -167,7 +167,7 @@ module.exports = function (params) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
                 app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-            } 
+              } 
           } catch (error) {
             if (error && error.message) {
                 app.http.customResponse(res, { success: false, message: error.message }, 400)
@@ -252,6 +252,40 @@ module.exports = function (params) {
               app.http.customResponse(res,{ success: true, message: result.message }, 200);
             }  else {
               app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+          }
+  });
+  app.get('/api/increase', async(req, res) => {
+    "use strict";
+          try {
+            let result = await sharedSevices.countincrease(req)
+            if (result && result.success) {
+              app.http.customResponse(res,{ success: true, message: result.message }, 200);
+            }  else {
+              app.http.customResponse(res, { success: false, message: result.message }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+          }
+  });
+  app.get('/api/decrease', async(req, res) => {
+    "use strict";
+          try {
+            let result = await sharedSevices.countdecrease(req)
+            if (result && result.success) {
+              app.http.customResponse(res,{ success: true, message: result.message }, 200);
+            }  else {
+              app.http.customResponse(res, { success: false, message: result.message }, 200);
             } 
           } catch (error) {
             if (error && error.message) {

@@ -1,6 +1,7 @@
 const invoke = require("../lib/http/invoke");
 const schedule = require("./organization/schedule")
 const globalMsg = require('../configuration/messages/message');
+const store = require("store2");
 
 let rolecreation = async (params) => {
   try {
@@ -160,10 +161,10 @@ let roledelete = async (params) => {
       database: "proctor",
       model: "role",
       docType: 0,
-      query: {
+      query:{
         "_id": params.params.role,
         $set: { isActive: B }
-      }
+      } 
     };
     let responseData = await invoke.makeHttpCall("post", "write", getdata);
     if (responseData && responseData.data && responseData.data.statusMessage) {
@@ -544,6 +545,50 @@ let getgroupnamebased = async (params) => {
     }
   }
 };
+let countincrease = async () => {
+  try {
+    store("count")
+    let data = store("count")+1
+    store('count',data)
+    let result = store("count") 
+    if (result > 0 ) {
+      return { success: true, message: result}
+    } else {
+      return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
+let countdecrease = async () => {
+  try {
+    store('count')
+    let data = store("count")-1
+    if(data >= 0 ){
+      store('count',data)
+      let result = store("count")
+      if (result) {
+        return { success: true, message: result}
+      } else {
+        return { success: false, message: 'Data Not Found'}
+      }
+    }else {
+      return { success: false, message: 'Data Not Found'}
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleget,
@@ -558,5 +603,7 @@ module.exports = {
   menuupdate,
   menudelete,
   getmenubasedonrole,
-  getgroupnamebased
+  getgroupnamebased,
+  countincrease,
+  countdecrease
 }
