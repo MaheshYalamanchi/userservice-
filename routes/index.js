@@ -1,15 +1,15 @@
 const sharedSevices = require("../routes/sharedService");
 module.exports = function (params) {
   var app = params.app;
-  app.post('/rolecreation', async(req, res) => {
+  app.post('/api/role', async(req, res) => {
     "use strict";
           try {
-            if(req.body.rolename){
+            if(req.body){
               let result = await sharedSevices.rolecreation(req.body)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
-                app.http.customResponse(res, { success: false, message: 'Data Not inserted' }, 200);
+                app.http.customResponse(res, { success: false, message: result.message }, 200);
             } 
             }else{
               res.send({ success: false, message: 'Please fill mandatory field.' });
@@ -20,7 +20,7 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.get('/api/role', async(req, res) => {
     "use strict";
@@ -48,10 +48,10 @@ module.exports = function (params) {
             }
           }
   });
-  app.put('/roleupdate', async(req, res) => {
+  app.put('/api/role/:roleId', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.roleupdate(req.body)
+              let result = await sharedSevices.roleupdate(req)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
@@ -65,10 +65,10 @@ module.exports = function (params) {
             }
           }
   });
-  app.delete('/roledelete', async(req, res) => {
+  app.get('/api/role/delete/:role', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.roledelete(req.body)
+              let result = await sharedSevices.roledelete(req)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
@@ -80,7 +80,7 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.post('/groupcreate', async(req, res) => {
     "use strict";
@@ -97,24 +97,33 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
-  app.get('/groupget', async(req, res) => {
+  app.get('/api/group', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.groupget()
+            if (req.query && req.query.limit && req.query.filter ) {
+              let result = await sharedSevices.groupget(req);
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
-              }  else {
+              } else {
                 app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-            } 
+              }
+            }else if(req.query && req.query.limit ) {
+              let result = await sharedSevices.groupget(req);
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              } else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+              }
+            }
           } catch (error) {
             if (error && error.message) {
                 app.http.customResponse(res, { success: false, message: error.message }, 400)
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.put('/groupupdate', async(req, res) => {
     "use strict";
@@ -131,7 +140,7 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.delete('/groupdelete', async(req, res) => {
     "use strict";
@@ -148,7 +157,7 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
  app.post('/menucreate', async(req, res) => {
     "use strict";
@@ -158,14 +167,14 @@ module.exports = function (params) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
                 app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-            } 
+              } 
           } catch (error) {
             if (error && error.message) {
                 app.http.customResponse(res, { success: false, message: error.message }, 400)
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.get('/menuget', async(req, res) => {
     "use strict";
@@ -199,7 +208,7 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.delete('/menudelete', async(req, res) => {
     "use strict";
@@ -216,7 +225,7 @@ module.exports = function (params) {
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
   });
   app.get('/api/role/:roleid', async(req, res) => {
     "use strict";
@@ -226,13 +235,64 @@ module.exports = function (params) {
               app.http.customResponse(res,{ success: true, message: result.message }, 200);
             }  else {
               app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-          } 
+            } 
           } catch (error) {
             if (error && error.message) {
                 app.http.customResponse(res, { success: false, message: error.message }, 400)
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-        }
+          }
+  });
+  app.get('/api/group/:groupname', async(req, res) => {
+    "use strict";
+          try {
+            let result = await sharedSevices.getgroupnamebased(req.params.groupname)
+            if (result && result.success) {
+              app.http.customResponse(res,{ success: true, message: result.message }, 200);
+            }  else {
+              app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+          }
+  });
+  app.get('/api/increase', async(req, res) => {
+    "use strict";
+          try {
+            let result = await sharedSevices.countincrease(req)
+            if (result && result.success) {
+              app.http.customResponse(res,{ success: true, message: result.message }, 200);
+            }  else {
+              app.http.customResponse(res, { success: false, message: result.message }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+          }
+  });
+  app.get('/api/decrease', async(req, res) => {
+    "use strict";
+          try {
+            let result = await sharedSevices.countdecrease(req)
+            if (result && result.success) {
+              app.http.customResponse(res,{ success: true, message: result.message }, 200);
+            }  else {
+              app.http.customResponse(res, { success: false, message: result.message }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+          }
   });
 }

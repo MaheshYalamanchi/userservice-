@@ -17,10 +17,12 @@
     "express": "^4.18.2",
     "http": "^0.0.1-security",
     "http-errors": "^1.6.3",
+    "lodash": "^4.17.21",
     "morgan": "~1.9.1",
     "nodemon": "^2.0.22",
     "otp-generator": "^4.0.1",
     "request": "^2.88.2",
+    "store2": "^2.14.2",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"
   },
