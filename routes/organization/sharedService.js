@@ -61,7 +61,7 @@ let OrgDetails = async (params) => {
                 }
             },
             {
-              $project: { id:"$_id",id: 0,orgname:1,thumbnail:1,description:1}
+              $project: {id:"$_id",_id: 0,orgname:1,thumbnail:1,description:1}
             },
             {$limit:limit},
             { $sort : { createdAt : -1 } }
@@ -145,7 +145,7 @@ let orgDelete = async (params) => {
          model: "org",
          docType: 0,
          query: {
-          "_id": params.params.org,
+          "_id": params.org,
           $set: { isActive: B }
         }
       };

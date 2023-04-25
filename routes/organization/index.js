@@ -11,7 +11,7 @@ app.post("/api/organization", async (req, res) => {
         app.http.customResponse(res,{ success: true, message: result.message }, 200);
       }  else {
         app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-        } 
+      } 
     } catch (error) {
         if (error && error.message) {
             app.http.customResponse(res, { success: false, message: error.message }, 400)
@@ -50,7 +50,7 @@ app.put("/orguserId/:id", async (req, res) => {
     "use strict";
     try {
         if (req && req.body) {
-            let result = await sharedSevices.OrgDetails(req.body);
+            let result = await sharedSevices.orgEdit(req.body);
             if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
@@ -70,7 +70,7 @@ app.put("/orguserId/:id", async (req, res) => {
 app.delete("/api/org/delete/:org", async (req, res) => {
     "use strict";
     try {
-        let result = await sharedSevices.orgDelete(req.body)
+        let result = await sharedSevices.orgDelete(req.params)
         if (result && result.success) {
             app.http.customResponse(res,{ success: true, message: result.message }, 200);
           }  else {
