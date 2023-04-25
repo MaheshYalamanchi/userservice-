@@ -1,48 +1,27 @@
 const invoke = require("../lib/http/invoke");
 const schedule = require("./organization/schedule")
 const globalMsg = require('../configuration/messages/message');
-const store = require("store2");
 
 let rolecreation = async (params) => {
   try {
-    if(params.rolename){
-      var postdata = {
-        url:process.env.MONGO_URI,
-        database: "proctor",
-        model: "role",
-        docType: 1,
-        query: [
-          {
-            "$match": { "rolename": params.rolename }
-         },
-        ]
-      };
-      let returnData = await invoke.makeHttpCall("post", "aggregate", postdata);
-      if (returnData && returnData.data && returnData.data.statusMessage.length==0) {
-        const data = {
-          "rolename": params.rolename,
-          "menuId" : params.menuId,
-          "createdBy": "admin",
-          "updatedBy": "admin"
-        }
-        var postdata = {
-          url:process.env.MONGO_URI,
-          database: "proctor",
-          model: "role",
-          docType: 0,
-          query: data
-        };
-        let responseData = await invoke.makeHttpCall("post", "write", postdata);
-        if (responseData && responseData.data && responseData.data.statusMessage._id) {
-          return { success: true, message: "Record inserted sucessfull" }
-        } else {
-          return { success: false, message: 'Data Not inserted' }
-        }
-      } else {
-        return { success: false, message: 'rolename already exists' }
-      }
-    }else{
-      return { success: false, message: 'rolename is missing' }
+    const data = {
+      "rolename": params.rolename,
+      "menuId" : params.menuId,
+      "createdBy": params.createdBy,
+      "updatedBy": params.updatedBy
+    }
+    var postdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "role",
+      docType: 0,
+      query: data
+    };
+    let responseData = await invoke.makeHttpCall("post", "write", postdata);
+    if (responseData && responseData.data && responseData.data.statusMessage._id) {
+      return { success: true, message: "Record inserted sucessfull" }
+    } else {
+      return { success: false, message: 'Data Not inserted' }
     }
   }
   catch (error) {
@@ -79,8 +58,7 @@ let roleget = async (params) => {
         {
           $project: { id: "$_id", _id: 0,rolename:1,createdBy:1,createdAt:1,updatedBy:1,updatedAt:1}
         },
-        {$limit:limit},
-        { $sort : { createdAt : -1 } }
+        {$limit:limit}
         ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
@@ -97,11 +75,10 @@ let roleget = async (params) => {
         model: "role",
         docType: 1,
         query: [
+          {$limit:limit},
           {
             $project: { id: "$_id", _id: 0,rolename:1,createdBy:1,createdAt:1,updatedBy:1,updatedAt:1}
-          },
-          {$limit:limit},
-          { $sort : { createdAt : -1 } }
+          }
         ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
@@ -122,20 +99,14 @@ let roleget = async (params) => {
 };
 let roleupdate = async (params) => {
   try {
-    if(params.body.isActive == 1){
-      var isTrueSet  = true;
-    }else{
-      var isTrueSet  = false;
-    }
-    var A = new Date().toISOString()
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "role",
       docType: 0,
-      query: {  
-        filter :{"_id": params.params.roleId},
-        update:{$set: { rolename: params.body.rolename,isActive: isTrueSet,updatedAt: A }}
+      query: {
+        filter :{"_id": params._id},
+        update:{$set: { rolename: params.rolename }}
       }
     };
     let responseData = await invoke.makeHttpCall("post", "update", getdata);
@@ -155,20 +126,19 @@ let roleupdate = async (params) => {
 };
 let roledelete = async (params) => {
   try {
-    let B = false
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "role",
       docType: 0,
-      query:{
-        "_id": params.params.role,
-        $set: { isActive: B }
-      } 
+      query: {
+        "_id": params._id,
+        $set: { isActive: params.isActive }
+      }
     };
     let responseData = await invoke.makeHttpCall("post", "write", getdata);
     if (responseData && responseData.data && responseData.data.statusMessage) {
-      return { success: true, message: "Record updated sucessfull"  }
+      return { success: true, message: responseData.data.statusMessage }
     } else {
       return { success: false, message: 'Data Not Found' }
     }
@@ -212,58 +182,20 @@ let groupcreate = async (params) => {
     }
   }
 };
-let groupget = async (params) => {
+let groupget = async () => {
   try {
-    if (params.query && params.query.limit && params.query.filter ){
-      var limit = parseInt(params.query.limit);
-      var filter = parseInt(params.query.filter);
-      var getdata = {
-        url:process.env.MONGO_URI,
-        database: "proctor",
-        model: "group",
-        docType: 1,
-        query: [
-          {
-            $match: {
-                $or: [
-                  { groupname: { $regex: params.query.filter, $options: 'i' } },
-                ]
-            }
-        },
-        {
-          $project: { _id: 0,groupname:1}
-        },
-        {$limit:limit},
-        { $sort : { createdAt : -1 } }
-        ]
-      };
-      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      if (responseData && responseData.data && responseData.data.statusMessage ) {
-        return { success: true, message: responseData.data.statusMessage }
-      } else {
-         return { success: false, message: 'Data Not Found' }
-      }
-    }else if (params.query && params.query.limit){
-      var limit = parseInt(params.query.limit);
-      var getdata = {
-        url:process.env.MONGO_URI,
-        database: "proctor",
-        model: "group",
-        docType: 1,
-        query: [
-          {
-            $project: { _id: 0,groupname:1}
-          },
-          {$limit:limit},
-          { $sort : { createdAt : -1 } }
-        ]
-      };
-      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      if (responseData && responseData.data && responseData.data.statusMessage) {
-        return { success: true, message: responseData.data.statusMessage }
-      } else {
-         return { success: false, message: 'Data Not Found' }
-      }
+    var getdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "group",
+      docType: 1,
+      query: {}
+    };
+    let responseData = await invoke.makeHttpCall("post", "read", getdata);
+    if (responseData && responseData.data) {
+      return { success: true, message: responseData.data.statusMessage }
+    } else {
+      return { success: false, message: 'Data Not Found' }
     }
   }
   catch (error) {
@@ -472,7 +404,7 @@ let getmenubasedonrole = async (params) => {
           $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
         },
         {
-          "$project":{"rolename": 1,"isActive":1,"_id":0,"menuname":"$data.menuname"}
+          "$project":{"_id":0,"menuname":"$data.menuname"}
         }
       ]
     };
@@ -481,104 +413,6 @@ let getmenubasedonrole = async (params) => {
       return { success: true, message:responseData.data.statusMessage }
     } else {
       return { success: false, message: 'Data Not Found' }  
-    }
-  }
-  catch (error) {
-    if (error && error.code == 'ECONNREFUSED') {
-      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
-    } else {
-      return { success: false, message: error }
-    }
-  }
-};
-let getgroupnamebased = async (params) => {
-  try {
-    var getdata = {
-      url:process.env.MONGO_URI,
-      database: "proctor",
-      model: "group",
-      docType: 1,
-      query: [
-        {
-           "$match": { "groupname": params }
-        },
-        {
-          $lookup:
-            {
-              from: "org",
-              localField: "orgId",
-              foreignField: "_id",
-              as: "data"
-            },
-        },
-        {
-          $unwind: { path: "$data" , preserveNullAndEmptyArrays: true }
-        },
-        {
-        $lookup:{
-            from: "plan", 
-            localField: "planid", 
-            foreignField: "_id",
-            as: "message"
-        }
-        },
-        {
-          $unwind: { path: "$message" , preserveNullAndEmptyArrays: true }
-        },
-        {
-          "$project":{_id:0,orgname:"$data.orgname",plan:"$message.plan"}
-        }
-      ]
-    };
-    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-    if (responseData && responseData.data && responseData.data.statusMessage) {
-      return { success: true, message:responseData.data.statusMessage }
-    } else {
-      return { success: false, message: 'Data Not Found' }  
-    }
-  }
-  catch (error) {
-    if (error && error.code == 'ECONNREFUSED') {
-      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
-    } else {
-      return { success: false, message: error }
-    }
-  }
-};
-let countincrease = async () => {
-  try {
-    store("count")
-    let data = store("count")+1
-    store('count',data)
-    let result = store("count") 
-    if (result > 0 ) {
-      return { success: true, message: result}
-    } else {
-      return { success: false, message: 'Data Not Found' }
-    }
-  }
-  catch (error) {
-    if (error && error.code == 'ECONNREFUSED') {
-      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
-    } else {
-      return { success: false, message: error }
-    }
-  }
-};
-let countdecrease = async () => {
-  try {
-    store('count')
-    let data = store("count")-1
-    if(data >= 0 ){
-      store('count',data)
-      let result = store("count")
-      if (result) {
-        return { success: true, message: result}
-      } else {
-        return { success: false, message: 'Data Not Found'}
-      }
-    }else {
-      return { success: false, message: 'Data Not Found'}
     }
   }
   catch (error) {
@@ -602,8 +436,5 @@ module.exports = {
   menuget,
   menuupdate,
   menudelete,
-  getmenubasedonrole,
-  getgroupnamebased,
-  countincrease,
-  countdecrease
+  getmenubasedonrole
 }
