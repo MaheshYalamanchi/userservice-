@@ -1,6 +1,7 @@
 const invoke = require("../lib/http/invoke");
 const schedule = require("./organization/schedule")
 const globalMsg = require('../configuration/messages/message');
+var jwtDecode = require('jwt-decode');
 
 let rolecreation = async (params) => {
   try {
@@ -423,6 +424,58 @@ let getmenubasedonrole = async (params) => {
     }
   }
 };
+let sessionstatus = async (params) => {
+  try {
+    if (params && params.id ){
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "rooms",
+        docType: 1,
+        query: [ 
+          {
+            "$match": { "_id": params.id }
+          },
+         {
+          $project: {  _id: 0,status:1}
+         }]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage ) {
+        return { success: true, message: responseData.data.statusMessage[0] }
+      } else {
+         return { success: false, message: 'Data Not Found' }
+      }
+    }else if (params.body && params.body.roomid){
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "rooms",
+        docType: 1,
+        query:  [ 
+          {
+            "$match": { "_id": params.body.roomid }
+         },
+         {
+          $project: {  _id: 0,status:1}
+         }]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage) {
+        return { success: true, message: responseData.data.statusMessage [0]}
+      } else {
+         return { success: false, message: 'Data Not Found' }
+      }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleget,
@@ -436,5 +489,6 @@ module.exports = {
   menuget,
   menuupdate,
   menudelete,
-  getmenubasedonrole
+  getmenubasedonrole,
+  sessionstatus
 }

@@ -1,7 +1,8 @@
 const sharedSevices = require("../routes/sharedService");
+const jwt_decode = require('jwt-decode');
 module.exports = function (params) {
   var app = params.app;
-  app.post('/rolecreation', async(req, res) => {
+  app.post('/user/rolecreation', async(req, res) => {
     "use strict";
           try {
             if(req.body.rolename){
@@ -22,7 +23,7 @@ module.exports = function (params) {
             }
         }
   });
-  app.get('/api/role', async(req, res) => {
+  app.get('/user/role', async(req, res) => {
     "use strict";
           try {
             if (req.query && req.query.limit && req.query.filter ) {
@@ -48,7 +49,7 @@ module.exports = function (params) {
             }
           }
   });
-  app.put('/roleupdate', async(req, res) => {
+  app.put('/user/roleupdate/:roleid', async(req, res) => {
     "use strict";
           try {
               let result = await sharedSevices.roleupdate(req.body)
@@ -218,7 +219,7 @@ module.exports = function (params) {
             }
         }
   });
-  app.get('/api/role/:roleid', async(req, res) => {
+  app.get('/user/role/:roleid', async(req, res) => {
     "use strict";
           try {
             let result = await sharedSevices.getmenubasedonrole(req.params)
@@ -235,4 +236,40 @@ module.exports = function (params) {
             }
         }
   });
+  app.post('/user/sessionstatus', async(req, res) => {
+    "use strict";
+    if(req && req.body && req.body.token ){
+      var decodeToken = jwt_decode(req.body.token)
+      try {
+        let result = await sharedSevices.sessionstatus(decodeToken)
+        if (result && result.success) {
+          app.http.customResponse(res,{ success: true, message: result.message }, 200);
+        }  else {
+          app.http.customResponse(res, { success: false, message: 'Data Not found' }, 200);
+      } 
+      }catch (error) {
+        if (error && error.message) {
+            app.http.customResponse(res, { success: false, message: error.message }, 400)
+        } else {
+            app.http.customResponse(res, { success: false, message: error }, 400)
+        }
+      }
+    }else if (req && req.body && req.body.roomid){
+      try {
+        let result = await sharedSevices.sessionstatus(req)
+        if (result && result.success) {
+          app.http.customResponse(res,{ success: true, message: result.message }, 200);
+        }  else {
+          app.http.customResponse(res, { success: false, message: 'Data Not found' }, 200);
+      } 
+      }catch (error) {
+        if (error && error.message) {
+            app.http.customResponse(res, { success: false, message: error.message }, 400)
+        } else {
+            app.http.customResponse(res, { success: false, message: error }, 400)
+        }
+      }
+    }
+});
+
 }
