@@ -26,28 +26,19 @@ module.exports = function (params) {
   app.get('/user/role', async(req, res) => {
     "use strict";
           try {
-            if (req.query && req.query.limit && req.query.filter ) {
-              let result = await sharedSevices.roleget(req);
-              if (result && result.success) {
-                app.http.customResponse(res,{ success: true, message: result.message }, 200);
-              } else {
-                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-              }
-            }else if(req.query && req.query.limit ) {
-              let result = await sharedSevices.roleget(req);
-              if (result && result.success) {
-                app.http.customResponse(res,{ success: true, message: result.message }, 200);
-              } else {
-                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-              }
-            }
+            let result = await sharedSevices.truestatus()
+            if (result && result.success) {
+              app.http.customResponse(res,{ success: true, message: result.message }, 200);
+            }  else {
+              app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+          } 
           } catch (error) {
             if (error && error.message) {
                 app.http.customResponse(res, { success: false, message: error.message }, 400)
             } else {
                 app.http.customResponse(res, { success: false, message: error }, 400)
             }
-          }
+        }
   });
   app.put('/user/roleupdate/:roleid', async(req, res) => {
     "use strict";
