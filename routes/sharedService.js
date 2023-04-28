@@ -41,7 +41,7 @@ let roleupdate = async (params) => {
       docType: 1,
       query: {
         filter :{"_id": params.params.roleid},
-        update:{$set: { rolename: params.body }}
+        update:{$set: { rolename: params.body.rolename,createdBy: params.body.createdBy,updatedBy: params.body.updatedBy,isActive: params.body.isActive }}
       }
     };
     let responseData = await invoke.makeHttpCall("post", "updatedataMany", getdata);
@@ -391,7 +391,6 @@ let getmenubasedonrole = async (params) => {
 };
 let sessionstatus = async (params) => {
   try {
-    console.log(params)
     if (params && params.id ){
       var getdata = {
         url:process.env.MONGO_URI,
@@ -407,7 +406,6 @@ let sessionstatus = async (params) => {
          }]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      console.log(responseData,'token')
       if (responseData && responseData.data && responseData.data.statusMessage ) {
         return { success: true, message: responseData.data.statusMessage[0] }
       } else {
@@ -428,7 +426,6 @@ let sessionstatus = async (params) => {
          }]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      console.log(responseData , "roomid")
       if (responseData && responseData.data && responseData.data.statusMessage) {
         return { success: true, message: responseData.data.statusMessage [0]}
       } else {
@@ -437,7 +434,6 @@ let sessionstatus = async (params) => {
     }
   }
   catch (error) {
-    console.log(error)
     if (error && error.code == 'ECONNREFUSED') {
       return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
     } else {
