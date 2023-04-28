@@ -1,7 +1,6 @@
 const invoke = require("../lib/http/invoke");
 const schedule = require("./organization/schedule")
 const globalMsg = require('../configuration/messages/message');
-var jwtDecode = require('jwt-decode');
 
 let rolecreation = async (params) => {
   try {
@@ -39,13 +38,13 @@ let roleupdate = async (params) => {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "role",
-      docType: 0,
+      docType: 1,
       query: {
-        filter :{"_id": params._id},
-        update:{$set: { rolename: params.rolename }}
+        filter :{"_id": params.params.roleid},
+        update:{$set: { rolename: params.body }}
       }
     };
-    let responseData = await invoke.makeHttpCall("post", "update", getdata);
+    let responseData = await invoke.makeHttpCall("post", "updatedataMany", getdata);
     if (responseData && responseData.data && responseData.data.statusMessage.nModified>0) {
       return { success: true, message: "Record updated sucessfully" }
     } else {
@@ -392,6 +391,7 @@ let getmenubasedonrole = async (params) => {
 };
 let sessionstatus = async (params) => {
   try {
+    console.log(params)
     if (params && params.id ){
       var getdata = {
         url:process.env.MONGO_URI,
@@ -407,6 +407,7 @@ let sessionstatus = async (params) => {
          }]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      console.log(responseData,'token')
       if (responseData && responseData.data && responseData.data.statusMessage ) {
         return { success: true, message: responseData.data.statusMessage[0] }
       } else {
@@ -427,6 +428,7 @@ let sessionstatus = async (params) => {
          }]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      console.log(responseData , "roomid")
       if (responseData && responseData.data && responseData.data.statusMessage) {
         return { success: true, message: responseData.data.statusMessage [0]}
       } else {
@@ -435,6 +437,7 @@ let sessionstatus = async (params) => {
     }
   }
   catch (error) {
+    console.log(error)
     if (error && error.code == 'ECONNREFUSED') {
       return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
     } else {
