@@ -429,7 +429,7 @@ let sessionstatus = async (params) => {
          }]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      if (responseData && responseData.data && responseData.data.statusMessage ) {
+      if (responseData && responseData.data && responseData.data.statusMessage&&responseData.data.statusMessage.length ) {
         return { success: true, message: responseData.data.statusMessage[0] }
       } else {
          return { success: false, message: 'Data Not Found' }
@@ -449,7 +449,7 @@ let sessionstatus = async (params) => {
          }]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      if (responseData && responseData.data && responseData.data.statusMessage) {
+      if (responseData && responseData.data && responseData.data.statusMessage&&responseData.data.statusMessage.length) {
         return { success: true, message: responseData.data.statusMessage [0]}
       } else {
          return { success: false, message: 'Data Not Found' }
