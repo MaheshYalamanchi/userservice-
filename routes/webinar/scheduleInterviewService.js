@@ -270,6 +270,45 @@ let storefeedback = async(params) => {
         }
     }
 }
+let joined = async (params) => {
+    try {
+      var postdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "webinar",
+        docType: 1,
+        query: [
+          { $unwind: { path: "$joined", preserveNullAndEmptyArrays: true } },
+          { $match : { roomId : params.roomId,"joined.join.email":params.join.email}}
+        ]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", postdata);
+      if (responseData && responseData.data && responseData.data.statusMessage.length>0) {
+        return { success: true, message: "Data already inserated"}
+      } else if(responseData.data.statusMessage.length==0){
+        var postdata = {
+          url:process.env.MONGO_URI,
+          database: "proctor",
+          model: "webinar",
+          docType: 0,
+          query: params
+        };
+        let responseData = await invoke.makeHttpCall("post", "write", postdata);
+        if (responseData && responseData.data && responseData.data.statusMessage) {
+          return { success: true, message: "Record inserted sucessfull" }
+        } else {
+          return { success: false, message: 'Data Not inserted' }
+        }
+      }
+    }
+    catch (error) {
+      if (error && error.code == 'ECONNREFUSED') {
+        return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+      } else {
+        return { success: false, message: error }
+      }
+    }
+  };
 
 module.exports={
     scheduleInterview,
@@ -279,5 +318,6 @@ module.exports={
     getroom,
     getallroom,
     getchat,
-    storefeedback
+    storefeedback,
+    joined
 }

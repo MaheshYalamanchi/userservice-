@@ -34,6 +34,7 @@ let rolecreation = async (params) => {
 };
 let roleupdate = async (params) => {
   try {
+    let A = new Date()
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
@@ -41,7 +42,7 @@ let roleupdate = async (params) => {
       docType: 1,
       query: {
         filter :{"_id": params.params.roleid},
-        update:{$set: { rolename: params.body.rolename,createdBy: params.body.createdBy,updatedBy: params.body.updatedBy,isActive: params.body.isActive }}
+        update:{$set: { rolename: params.body.rolename,createdBy: params.body.createdBy,updatedBy: params.body.updatedBy,isActive: params.body.isActive,updatedAt: A }}
       }
     };
     let responseData = await invoke.makeHttpCall("post", "updatedataMany", getdata);
@@ -67,8 +68,8 @@ let roledelete = async (params) => {
       model: "role",
       docType: 0,
       query: {
-        "_id": params._id,
-        $set: { isActive: params.isActive }
+        "_id": params.roleId,
+        $set: { isActive: false }
       }
     };
     let responseData = await invoke.makeHttpCall("post", "write", getdata);
@@ -148,16 +149,26 @@ let groupcreate = async (params) => {
     }
   }
 };
-let groupget = async () => {
+let groupget = async (params) => {
   try {
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "group",
       docType: 1,
-      query: {}
+      query: [
+        {
+          "$addFields": { "_id": { "$toString": "$_id" } }
+        },
+        {
+          "$match": { "_id": params.groupId }
+        },
+        {
+          $project: { groupname:1,orgId:1,planid:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,_id:0 }
+        }
+      ]
     };
-    let responseData = await invoke.makeHttpCall("post", "read", getdata);
+    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
     if (responseData && responseData.data) {
       return { success: true, message: responseData.data.statusMessage }
     } else {
@@ -174,17 +185,18 @@ let groupget = async () => {
 };
 let groupupdate = async (params) => {
   try {
+    let A = new Date()
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "group",
-      docType: 0,
+      docType: 1,
       query: {
-        filter:{"_id": params._id},
-        update:{$set: { groupname: params.groupname, orgId: params.orgId }},
+        filter:{"_id": params.params.groupId},
+        update:{$set: { groupname: params.body.groupname, orgId: params.body.orgId,isActive:params.body.isActive,planid:params.body.planid,createdBy:params.body.createdBy,updatedBy:params.body.updatedBy,updatedAt:A }},
       }
     };
-    let responseData = await invoke.makeHttpCall("post", "update", getdata);
+    let responseData = await invoke.makeHttpCall("post", "updatedataMany", getdata);
     if (responseData && responseData.data && responseData.data.statusMessage.nModified>0) {
       return { success: true, message: "Record updated sucessfully" }
     } else {
@@ -207,8 +219,8 @@ let groupdelete = async (params) => {
       model: "group",
       docType: 0,
       query: {
-        "_id": params._id,
-        $set: { isActive: params.isActive }
+        "_id": params.groupId,
+        $set: { isActive: false }
       }
     };
     let responseData = await invoke.makeHttpCall("post", "write", getdata);
@@ -265,16 +277,26 @@ let menucreate = async (params) => {
     }
   }
 };
-let menuget = async () => {
+let menuget = async (params) => {
   try {
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "menu",
       docType: 1,
-      query: {}
+      query: [
+        {
+          "$addFields": { "_id": { "$toString": "$_id" } }
+        },
+        {
+          "$match": { "_id": params.menuId }
+        },
+        {
+          $project: { menuname:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,isActive:1,_id:0}
+        }
+      ]
     };
-    let responseData = await invoke.makeHttpCall("post", "read", getdata);
+    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
     if (responseData && responseData.data) {
       return { success: true, message: responseData.data.statusMessage }
     } else {
@@ -291,14 +313,15 @@ let menuget = async () => {
 };
 let menuupdate = async (params) => {
   try {
+    let A = new Date()
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
       model: "menu",
       docType: 0,
       query: {
-        filter :{"_id": params._id},
-        update: {$set: { menuname: params.menuname, createdBy: params.createdBy ,updatedBy: params.updatedBy}},
+        filter :{"_id": params.params.menuId},
+        update: {$set: { menuname: params.body.menuname, createdBy: params.body.createdBy ,updatedBy: params.body.updatedBy,updatedAt:A}},
       }
     };
     let responseData = await invoke.makeHttpCall("post", "update", getdata);
@@ -324,8 +347,8 @@ let menudelete = async (params) => {
       model: "menu",
       docType: 0,
       query: {
-        "_id": params._id,
-        $set: { isActive: params.isActive }
+        "_id": params.params.menuId,
+        $set: { isActive: false }
       }
     };
     let responseData = await invoke.makeHttpCall("post", "write", getdata);
@@ -406,7 +429,7 @@ let sessionstatus = async (params) => {
          }]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      if (responseData && responseData.data && responseData.data.statusMessage ) {
+      if (responseData && responseData.data && responseData.data.statusMessage&&responseData.data.statusMessage.length ) {
         return { success: true, message: responseData.data.statusMessage[0] }
       } else {
          return { success: false, message: 'Data Not Found' }
@@ -426,7 +449,7 @@ let sessionstatus = async (params) => {
          }]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      if (responseData && responseData.data && responseData.data.statusMessage) {
+      if (responseData && responseData.data && responseData.data.statusMessage&&responseData.data.statusMessage.length) {
         return { success: true, message: responseData.data.statusMessage [0]}
       } else {
          return { success: false, message: 'Data Not Found' }
@@ -455,5 +478,5 @@ module.exports = {
   menudelete,
   getmenubasedonrole,
   sessionstatus,
-  truestatus
+  truestatus,
 }

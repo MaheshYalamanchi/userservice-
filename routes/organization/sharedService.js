@@ -41,73 +41,38 @@ let orgEntery = async (params) => {
 };
 let OrgDetails = async (params) => {
     try {
-        if (params.query && params.query.limit && params.query.filter ){
-          var limit = parseInt(params.query.limit);
-          var filter = parseInt(params.query.filter);
-          var getdata = {
-            url:process.env.MONGO_URI,
-            database: "proctor",
-            model: "org",
-            docType: 1,
-            query: [
-              {
-                $match: {
-                    $or: [
-                      { orgname: { $regex: params.query.filter, $options: 'i' } },
-                      { thumbnail: { $regex: params.query.filter, $options: 'i' } },
-                      { description: { $regex: params.query.filter, $options: 'i' } }
-                    ]
-                }
-            },
-            {
-              $project: { _id: 0,orgname:1,thumbnail:1,description:1}
-            },
-            {$limit:limit}
-            ]
-          };
-          let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-          if (responseData && responseData.data && responseData.data.statusMessage) {
-            return { success: true, message: responseData.data.statusMessage }
-          } else {
-             return { success: false, message: 'Data Not Found' }
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "org",
+        docType: 1,
+        query: [
+          {
+            "$addFields": { "_id": { "$toString": "$_id" } }
+          },
+          {
+            "$match": { "_id": params.orgId }
+          },
+          {
+            $project: { isActive:1,_id:0 ,orgname:1,description:1,thumbnail:1,createdBy:1,updatedBy:1,updatedAt:1,createdAt:1}
           }
-        }else if (params.query && params.query.limit){
-          var limit = parseInt(params.query.limit);
-          var getdata = {
-            url:process.env.MONGO_URI,
-            database: "proctor",
-            model: "org",
-            docType: 1,
-            query: [
-              {$limit:limit},
-              {
-                $project: {_id: 0,orgname:1,thumbnail:1,description:1}
-              }
-            ]
-            
-          };
-          let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-          if (responseData && responseData.data && responseData.data.statusMessage) {
-            let data = [];
-            for (const child of responseData.data.statusMessage) {
-                    //iterator.imageurl=child.imageurl
-                    child.thumbnail="<img height='40' width ='40' src="+child.thumbnail+">"
-                    data.push(child);         
-            }
-            return { success: true, message: data}
-          } else {
-             return { success: false, message: 'Data Not Found' }
-          }
-        }
+        ]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      if (responseData && responseData.data) {
+        return { success: true, message: responseData.data.statusMessage }
+      } else {
+        return { success: false, message: 'Data Not Found' }
       }
-    catch (error) {
-        if (error && error.code == 'ECONNREFUSED') {
-            return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
-        } else {
-            return { success: false, message: error }
-        }
     }
-};
+    catch (error) {
+      if (error && error.code == 'ECONNREFUSED') {
+        return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+      } else {
+        return { success: false, message: error }
+      }
+    }
+  };
 let orgEdit = async (params) => {
     try {
         var postdata = {
