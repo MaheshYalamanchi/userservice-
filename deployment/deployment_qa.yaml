@@ -23,12 +23,12 @@ spec:
             - name: DATA_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-qa-env
                   key: DATA_SERVICE_ENDPOINT
             - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-qa-env
                   key: MONGO_URI
       imagePullSecrets:
         - name: mysecret
