@@ -23,6 +23,7 @@ app.util = require("./lib/util/parser");
 app.invoke = require("./lib/http/invoke");
 require('./routes/index')({app:app})
 require('./routes/webinar/index')({app:app})
+require('./routes/loggs/index')({app:app})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
