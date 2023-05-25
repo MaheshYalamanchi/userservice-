@@ -24,10 +24,12 @@ let reportlog = async (params) => {
           m3 : "Mobile use"
         }
         var metrics = params.peak
-        var peak = metrics
-        const value = jsondata[peak];
+        const value = jsondata[metrics];
       const data = {
-        "logmsg": value,
+        "logmsg": {
+          message : value,
+          time :params.time,
+        },
         "room": params.room,
         "student": params.student,
         "createdAt": new Date(),
