@@ -43,7 +43,7 @@ let timeicidents = async (params) => {
                 var exam = "Exam stoped"
             }else if (params.peak.messagetime){
                 var time = params.peak.messagetime
-                var exam = params.peak.message+"(from="+params.peak.student+")"
+                var exam = params.peak.message
                 var id = params.room[0]._id
                 var postdata = {
                     url:process.env.MONGO_URI,
