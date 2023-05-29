@@ -53,21 +53,7 @@ spec:
                 secretKeyRef:
                   name: proctor-prod-env
                   key: CACHE_CONTROL
-            - name: AZURE_PORTAL
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-prod-env
-                  key: AZURE_PORTAL
-            - name: BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-prod-env
-                  key: BASE_URL
-            - name: proctorui
-              valueFrom: null
-              secretKeyRef:
-                name: proctor-prod-env
-                key: proctorui
+            
           ports:
           - containerPort: 3005
       imagePullSecrets:
