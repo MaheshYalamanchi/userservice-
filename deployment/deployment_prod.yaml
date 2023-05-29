@@ -23,7 +23,11 @@ spec:
                 secretKeyRef:
                   name: proctor-prod-env
                   key: DATA_SERVICE_ENDPOINT
-            
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-prod-env
+                  key: MONGO_URI
           ports:
           - containerPort: 3005
       imagePullSecrets:
