@@ -58,6 +58,11 @@ spec:
                 secretKeyRef:
                   name: proctor-prod-env
                   key: AZURE_PORTAL
+            - name: BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-prod-env
+                  key: BASE_URL
             
           ports:
           - containerPort: 3005
