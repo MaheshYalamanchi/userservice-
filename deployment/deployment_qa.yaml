@@ -80,5 +80,7 @@ spec:
               secretKeyRef:
                 name: proctor-qa-env
                 key: proctorui
+          ports:
+          - containerPort: 3005
       imagePullSecrets:
         - name: mysecret
