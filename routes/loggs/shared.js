@@ -55,9 +55,9 @@ let timeicidents = async (params) => {
                         update:{ 
                             $push: { 
                                 "chat": {
-                                    "send_by":params.peak.student,
+                                    "sendBy":params.peak.student,
                                     "role":params.peak.role,
-                                    "chat-message": exam,
+                                    "chatMessage": exam,
                                     "time": time
                                 }
                             }
