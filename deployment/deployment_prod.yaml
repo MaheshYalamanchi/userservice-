@@ -53,6 +53,11 @@ spec:
                 secretKeyRef:
                   name: proctor-prod-env
                   key: CACHE_CONTROL
+            - name: AZURE_PORTAL
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-prod-env
+                  key: AZURE_PORTAL
             
           ports:
           - containerPort: 3005
