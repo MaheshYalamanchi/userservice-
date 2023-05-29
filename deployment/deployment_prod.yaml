@@ -28,6 +28,11 @@ spec:
                 secretKeyRef:
                   name: proctor-prod-env
                   key: MONGO_URI
+            - name: SubscriptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-prod-env
+                  key: SubscriptionKey
           ports:
           - containerPort: 3005
       imagePullSecrets:
