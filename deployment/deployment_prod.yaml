@@ -33,6 +33,16 @@ spec:
                 secretKeyRef:
                   name: proctor-prod-env
                   key: SubscriptionKey
+            - name: Endpoint
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-prod-env
+                  key: Endpoint
+            - name: AZURE_SERVICE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-prod-env
+                  key: AZURE_SERVICE_ENDPOINT
           ports:
           - containerPort: 3005
       imagePullSecrets:
