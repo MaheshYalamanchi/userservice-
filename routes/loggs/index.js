@@ -1,4 +1,5 @@
 const services = require("./logservice");
+const invoke = require("../../lib/http/invoke");
 module.exports = function (params) {
     var app = params.app;
     
@@ -7,6 +8,7 @@ module.exports = function (params) {
             if(req.body){
                 let result = await services.reportlog(req.body);
                 if (result && result.success) {
+                    let response = await invoke.makeHttpCall("get", "closeconnection");
                     app.logger.info({ success: true, message: result.message });
                     app.http.customResponse(res, result.message, 200);
                 } else {
