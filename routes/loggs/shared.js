@@ -2,7 +2,7 @@ const invoke = require("../../lib/http/invoke");
 var globalMsg = require('../../configuration/messages/message');
 const { METHODS } = require("http");
 
-let timeicidents = async (params) => {
+let timeincidents = async (params) => {
     try {
         if(params.peak.peak){
             var metrics = params.peak.peak
@@ -83,7 +83,9 @@ let timeicidents = async (params) => {
                         $push: { 
                             "logmsg": {
                                 "message": exam,
-                                "time": time
+                                "time": time,
+                                "status" : params.peak.status,
+                                "comment" : params.peak.comment
                             }
                         }
                     }
@@ -123,6 +125,8 @@ let time = async (params) => {
             "logmsg": {
                 "message" : exam,
                 "time" : time,
+                "status" : params.peak.status,
+                "comment" : params.peak.comment
             },
             "room": params.peak.room,
             "student": params.peak.student,
@@ -152,6 +156,6 @@ let time = async (params) => {
   };
 
 module.exports={
-    timeicidents,
+    timeincidents,
     time
 }
