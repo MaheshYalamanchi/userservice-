@@ -2,7 +2,7 @@ const invoke = require("../../lib/http/invoke");
 var globalMsg = require('../../configuration/messages/message');
 const { METHODS } = require("http");
 
-let timeicidents = async (params) => {
+let timeincidents = async (params) => {
     try {
         if(params.peak.peak){
             var metrics = params.peak.peak
@@ -41,6 +41,35 @@ let timeicidents = async (params) => {
             }else if (params.peak.stoptime){
                 var time = params.peak.stoptime
                 var exam = "Exam stoped"
+            }else if (params.peak.messagetime){
+                var time = params.peak.messagetime
+                var exam = params.peak.message
+                var id = params.room[0]._id
+                var postdata = {
+                    url:process.env.MONGO_URI,
+                    database: "proctor",
+                    model: "room_log",
+                    docType: 0,
+                    query: {
+                        filter: { "_id": id },
+                        update:{ 
+                            $push: { 
+                                "chat": {
+                                    "sendBy":params.peak.student,
+                                    "role":params.peak.role,
+                                    "chatMessage": exam,
+                                    "time": time
+                                }
+                            }
+                        }
+                    }
+                };
+                let responseData = await invoke.makeHttpCall("post", "update", postdata);
+                if (responseData && responseData.data && responseData.data.statusMessage) {
+                    return { success: true, message: "Record inserted sucessfull" }
+                } else {
+                    return { success: false, message: 'Data Not inserted' }
+                }
             }
             var id = params.room[0]._id
             var postdata = {
@@ -54,7 +83,9 @@ let timeicidents = async (params) => {
                         $push: { 
                             "logmsg": {
                                 "message": exam,
-                                "time": time
+                                "time": time,
+                                "status" : params.peak.status,
+                                "comment" : params.peak.comment
                             }
                         }
                     }
@@ -86,11 +117,16 @@ let time = async (params) => {
         }else if (params.peak.stoptime){
             var time = params.peak.stoptime
             var exam = "Exam stoped"
-        }
+        }else if (params.peak.messagetime){
+            var time = params.peak.messagetime
+            var exam = params.peak.message+"(from="+params.peak.student+")"
+        }    
         const data = {
             "logmsg": {
                 "message" : exam,
                 "time" : time,
+                "status" : params.peak.status,
+                "comment" : params.peak.comment
             },
             "room": params.peak.room,
             "student": params.peak.student,
@@ -120,6 +156,6 @@ let time = async (params) => {
   };
 
 module.exports={
-    timeicidents,
+    timeincidents,
     time
 }

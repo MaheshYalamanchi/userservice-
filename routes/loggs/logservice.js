@@ -23,7 +23,6 @@ let reportlog = async (params) => {
         h1 : "Headphone use",
         m3 : "Mobile use"
       }
-      if(params ){
         var postdata = {
           url:process.env.MONGO_URI,
           database: "proctor",
@@ -45,7 +44,7 @@ let reportlog = async (params) => {
             metrics : jsondata,
             peak : params
           }
-          let status = await shared.timeicidents(data)
+          let status = await shared.timeincidents(data)
           if (status && status.message) {
             return { success: true, message:  status.message}
           } else {
@@ -91,9 +90,6 @@ let reportlog = async (params) => {
             return { success: false, message: 'Data Not inserted' }
           }
         }
-      }
-      }else {
-        return { success: false, message: 'Data Not inserted' }
       }
     }catch (error) {
       if (error && error.code == 'ECONNREFUSED') {
