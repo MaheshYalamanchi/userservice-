@@ -79,8 +79,6 @@ spec:
               valueFrom: null
               secretKeyRef:
                 name: proctor-uat-env 
-                key: proctorui
-            ports:
-            - containerPort: 3005     
+                key: proctorui   
       imagePullSecrets:
         - name: mysecret
