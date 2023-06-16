@@ -76,7 +76,7 @@ spec:
                   name: proctor-uat-env
                   key: BASE_URL
             - name: proctorui
-              valueFrom: null
+              valueFrom:
               secretKeyRef:
                 name: proctor-uat-env
                 key: proctorui
