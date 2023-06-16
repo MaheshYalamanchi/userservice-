@@ -38,6 +38,9 @@ let timeincidents = async (params) => {
             }else if(params.peak.starttime){
                 var time = params.peak.starttime
                 var exam = "Exam started"
+            }else if (params.peak.pausetime){
+                var time = params.peak.pausetime
+                var exam = "Exam paused"
             }else if (params.peak.stoptime){
                 var time = params.peak.stoptime
                 var exam = "Exam stoped"
@@ -120,7 +123,10 @@ let time = async (params) => {
         }else if (params.peak.messagetime){
             var time = params.peak.messagetime
             var exam = params.peak.message+"(from="+params.peak.student+")"
-        }    
+        }else if (params.peak.pausetime){
+            var time = params.peak.pausetime
+            var exam = "Exam paused"
+        }
         const data = {
             "logmsg": {
                 "message" : exam,
