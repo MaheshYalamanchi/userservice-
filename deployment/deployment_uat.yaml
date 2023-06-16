@@ -23,62 +23,62 @@ spec:
             - name: DATA_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: DATA_SERVICE_ENDPOINT
             - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: MONGO_URI
             - name: SubscriptionKey
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: SubscriptionKey
             - name: Endpoint
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: Endpoint
             - name: AZURE_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: AZURE_SERVICE_ENDPOINT
             - name: LOCATION
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: LOCATION
             - name: ACCOUNT_ID
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: ACCOUNT_ID
             - name: SUBSCRIPTION_KEY
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: SUBSCRIPTION_KEY
             - name: CACHE_CONTROL
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: CACHE_CONTROL
             - name: AZURE_PORTAL
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: AZURE_PORTAL
             - name: BASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-uat-env 
                   key: BASE_URL
             - name: proctorui
               valueFrom: null
               secretKeyRef:
-                name: proctor-dev-env
+                name: proctor-uat-env 
                 key: proctorui
           ports:
           - containerPort: 3005     
