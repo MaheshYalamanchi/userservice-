@@ -17,10 +17,8 @@ spec:
         - name: userservice
           image: proctordev.azurecr.io/userservice:$tag
           imagePullPolicy: Always
-          ports:
-            - containerPort: 3005
           env:
-            - name: DATA_SERVICE_ENDPOINT
+          - name: DATA_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
