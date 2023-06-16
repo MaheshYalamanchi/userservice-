@@ -23,57 +23,57 @@ spec:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: DATA_SERVICE_ENDPOINT
-            - name: MONGO_URI
+          - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: MONGO_URI
-            - name: SubscriptionKey
+          - name: SubscriptionKey
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: SubscriptionKey
-            - name: Endpoint
+          - name: Endpoint
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: Endpoint
-            - name: AZURE_SERVICE_ENDPOINT
+          - name: AZURE_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: AZURE_SERVICE_ENDPOINT
-            - name: LOCATION
+          - name: LOCATION
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: LOCATION
-            - name: ACCOUNT_ID
+          - name: ACCOUNT_ID
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: ACCOUNT_ID
-            - name: SUBSCRIPTION_KEY
+          - name: SUBSCRIPTION_KEY
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: SUBSCRIPTION_KEY
-            - name: CACHE_CONTROL
+          - name: CACHE_CONTROL
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: CACHE_CONTROL
-            - name: AZURE_PORTAL
+          - name: AZURE_PORTAL
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: AZURE_PORTAL
-            - name: BASE_URL
+          - name: BASE_URL
               valueFrom:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: BASE_URL
-            - name: proctorui
+          - name: proctorui
               valueFrom:
               secretKeyRef:
                 name: proctor-uat-env
