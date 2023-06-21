@@ -160,8 +160,53 @@ let time = async (params) => {
       }
     }
   };
-
+  let filename = async (params) => {
+    try {
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "chats",
+        docType: 1,
+        query: [
+          {
+            "$match": { "room": params.roomId }
+          },
+          {
+             $lookup: {
+              from: 'attaches',
+              localField: 'attach',
+              foreignField: '_id',
+              as: 'data',
+            }
+          },
+          {
+             "$unwind": { "path": "$data", "preserveNullAndEmptyArrays": true }
+          },
+          {
+            "$match": { "data.attached" : true ,"data.filename": params.filename }
+          },
+          {
+            "$project": { "_id": 0 ,"id" :"$data._id", user:"$data.user",filename: "$data.filename", mimetype: "$data.mimetype",size: "$data.size",createdAt: "$data.createdAt",attached: "$data.attached",metadata:"$data.metadata"}
+          },
+        ]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage) {
+        return { success: true, message: responseData.data.statusMessage}
+      } else {
+        return { success: false, message: 'Data Not Found' }
+      }
+    }
+    catch (error) {
+      if (error && error.code == 'ECONNREFUSED') {
+        return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+      } else {
+        return { success: false, message: error }
+      }
+    }
+  };
 module.exports={
     timeincidents,
-    time
+    time,
+    filename
 }

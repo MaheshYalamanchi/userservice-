@@ -1,6 +1,7 @@
 const invoke = require("../../lib/http/invoke");
 var globalMsg = require('../../configuration/messages/message');
 const shared = require("./shared");
+const sharedSevices = require("../organization/sharedService");
 const { METHODS } = require("http");
 let reportlog = async (params) => {
     try {
@@ -98,8 +99,34 @@ let reportlog = async (params) => {
         return { success: false, message: error }
       }
     }
-  };
-
+};
+let screenshotget = async (params) => {
+  try {
+    var data = {
+      roomId: params.roomId,
+      filename: "screen.jpg"
+    }
+    let responseData = await shared.filename(data)
+    var jsondata = {
+      roomId: params.roomId,
+      filename: "webcam.webm"
+    }
+    let response = await shared.filename(jsondata)
+    if (response && response.success) {
+      return { success: true, message: { images: responseData.message,videos: response.message}}
+    } else {
+      return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports={
-    reportlog
+    reportlog,
+    screenshotget
 }
