@@ -159,7 +159,7 @@ let time = async (params) => {
         return { success: false, message: error }
       }
     }
-  };
+  }; 
   let filename = async (params) => {
     try {
       var getdata = {
@@ -168,26 +168,37 @@ let time = async (params) => {
         model: "chats",
         docType: 1,
         query: [
-          {
-            "$match": { "room": params.roomId }
-          },
-          {
-             $lookup: {
-              from: 'attaches',
-              localField: 'attach',
-              foreignField: '_id',
-              as: 'data',
+            {
+                $addFields: { b1: "Browser not supported",b2: "Focus changed to a different window",b3: "Full-screen mode is disabled", k1: "Atypical keyboard handwriting",m1: "Microphone muted or its volume is low",
+                    n2: "No connection to a mobile camera", s1: "Screen activities are not shared",s2: "Second display is used", m2: "Conversation or noise in the background", n1: "No network connection",
+                    c1: "Webcam is disabled",c2: "Face invisible or not looking into the camera", c3: "Several faces in front of the camera",c4: "Face does not match the profile", c5: "Found a similar profile",
+                    h1: "Headphone use", m3: "Mobile use"
+                }
+            },
+            {
+            $match: {"room": params.roomId }
+            },
+            {
+                $lookup: {
+                    from: 'attaches',
+                    localField: 'attach',
+                    foreignField: '_id',
+                    as: 'data',
+                }
+            },
+            { $unwind: { "path": "$data","preserveNullAndEmptyArrays": true }},
+            { $match: { "data.attached": true,"data.filename": params.filename } },
+            { $project: {
+                        "_id": 0,
+                        "id": "$data._id",
+                        "peak": {
+                    $cond: [{ $eq: ["$metadata.peak", "b1"]},"$b1",{ $cond: [ { $eq: ["$metadata.peak","b2" ]},"$b2",{ $cond: [{ $eq: ["$metadata.peak","b3"]},"$b3",{ $cond: [{ $eq: ["$metadata.peak", "k1"]}, "$k1", { $cond: [{ $eq: ["$metadata.peak","m1"]},
+                                    "$m1",{ $cond: [{ $eq: ["$metadata.peak","m2" ] }, "$m2", { $cond: [{ $eq: ["$metadata.peak","m3"]},"$m3", { $cond: [{ $eq: ["$metadata.peak", "n1"]}, "$n1",{ $cond: [ { $eq: ["$metadata.peak","n2"]}, "$n2", { $cond: [ { $eq: ["$metadata.peak", "s1" ]},
+                                    "$s1", { $cond: [{ $eq: [ "$metadata.peak","s2" ]},"$s2",{ $cond: [{ $eq: [ "$metadata.peak", "c1" ]}, "$c1",{ $cond: [{ $eq: [ "$metadata.peak", "c2"]}, "$c2",{ $cond: [{ $eq: ["$metadata.peak","s2"] }, "$s2", { $cond: [{ $eq: ["$metadata.peak", "c3"]},
+                                    "$c3",{ $cond: [{ $eq: [ "$metadata.peak","c4"] },"$c4", { $cond: [{ $eq: [ "$metadata.peak", "c5"]},"$c5",{ $ifNull: ["$metadata.peak",null]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]},"user": "$data.user", "filename": "$data.filename","mimetype": "$data.mimetype",
+                                    "size": "$data.size","createdAt": "$data.createdAt","attached": "$data.attached", "metadata": "$data.metadata"
+                }
             }
-          },
-          {
-             "$unwind": { "path": "$data", "preserveNullAndEmptyArrays": true }
-          },
-          {
-            "$match": { "data.attached" : true ,"data.filename": params.filename }
-          },
-          {
-            "$project": { "_id": 0 ,"id" :"$data._id", user:"$data.user",filename: "$data.filename", mimetype: "$data.mimetype",size: "$data.size",createdAt: "$data.createdAt",attached: "$data.attached",metadata:"$data.metadata"}
-          },
         ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
