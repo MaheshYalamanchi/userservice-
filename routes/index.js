@@ -176,10 +176,10 @@ module.exports = function (params) {
             }
         }
   });
-  app.get('/user/menuget/:menuId', async(req, res) => {
+  app.get('/user/menuget', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.menuget(req.params)
+              let result = await sharedSevices.menuget()
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {

@@ -286,12 +286,6 @@ let menuget = async (params) => {
       docType: 1,
       query: [
         {
-          "$addFields": { "_id": { "$toString": "$_id" } }
-        },
-        {
-          "$match": { "_id": params.menuId }
-        },
-        {
           $project: { menuname:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,isActive:1,_id:0}
         }
       ]
