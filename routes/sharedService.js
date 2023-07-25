@@ -241,7 +241,7 @@ let groupdelete = async (params) => {
 let menucreate = async (params) => {
   try {
     const data = {
-      "menuname": params.menuname,
+      "displayName": params.menuname,
       "roleId": params.roleId,
       "createdBy": params.createdBy,
       "updatedBy": params.updatedBy
@@ -286,7 +286,7 @@ let menuget = async (params) => {
       docType: 1,
       query: [
         {
-          $project: { menuname:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,isActive:1,_id:0}
+          $project: { displayName:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,iconName:1,route:1,isActive:1,_id:0}
         }
       ]
     };
