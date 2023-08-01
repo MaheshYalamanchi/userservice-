@@ -458,6 +458,37 @@ let sessionstatus = async (params) => {
     }
   }
 };
+let reportlog = async (params) => {
+  try {
+    var getdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "reportlog",
+      docType: 1,
+      query: [
+        {
+          "$match": { "roomId": params.roomId}
+        },
+        {
+          "$project":{_id:0}
+        }
+      ]
+    };
+    let fetchData = await invoke.makeHttpCall("post", "aggregate", getdata);
+    if (fetchData && fetchData.data) {
+      return { success: true, message: fetchData.data.statusMessage }
+    } else {
+      return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleupdate,
@@ -473,4 +504,5 @@ module.exports = {
   getmenubasedonrole,
   sessionstatus,
   truestatus,
+  reportlog
 }
