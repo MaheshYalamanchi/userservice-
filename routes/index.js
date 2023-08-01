@@ -262,12 +262,12 @@ module.exports = function (params) {
       }
     }
 });
-  app.get('/user/reportlog/:roomId', async(req, res) => {
+  app.get('/user/reportlog/:roomId/:userId', async(req, res) => {
     "use strict";
           try {
               let result = await sharedSevices.reportlog(req.params)
               if (result && result.success) {
-                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+                app.http.customResponse(res, result.message, 200);
               }  else {
                 app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
             } 

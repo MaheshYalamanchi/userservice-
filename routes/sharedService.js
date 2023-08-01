@@ -467,10 +467,12 @@ let reportlog = async (params) => {
       docType: 1,
       query: [
         {
-          "$match": { "roomId": params.roomId}
+          "$match": {
+            "$or": [ { "roomId": params.roomId },{ "student": params.userId }]
+          }
         },
         {
-          "$project":{_id:0}
+          "$project": { "_id": 0 }
         }
       ]
     };
