@@ -477,7 +477,6 @@ let reportlog = async (params) => {
       ]
     };
     let fetchData = await invoke.makeHttpCall("post", "aggregate", getdata);
-    console.log("fetchData",fetchData)
     if (fetchData && fetchData.data) {
       return { success: true, message: fetchData.data.statusMessage }
     } else {
