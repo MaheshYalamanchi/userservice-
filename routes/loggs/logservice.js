@@ -3,6 +3,7 @@ var globalMsg = require('../../configuration/messages/message');
 const shared = require("./shared");
 const sharedSevices = require("../organization/sharedService");
 const { METHODS } = require("http");
+const { default: jwtDecode } = require("jwt-decode");
 let reportlog = async (params) => {
     try {
       jsondata = {
@@ -57,8 +58,9 @@ let reportlog = async (params) => {
           const value = jsondata[metrics];
           const data = {
             "logmsg": {
+              "peak": metrics,
               "message" : value,
-              time :params.time,
+              "time" :params.time,
             },
             "room": params.room,
             "student": params.student,
