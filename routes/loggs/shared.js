@@ -7,17 +7,18 @@ let timeincidents = async (params) => {
         if(params.peak.peak){
             var metrics = params.peak.peak
             var value = jsondata[metrics];
-            var id = params.room[0]._id
+            var id = params.room[0].room
             var postdata = {
                 url:process.env.MONGO_URI,
                 database: "proctor",
                 model: "room_log",
                 docType: 0,
                 query: {
-                filter: { "_id": id },
+                filter: { "room": id },
                 update:{ 
                     $push: { 
                     "logmsg": {
+                        "peak": metrics,
                         "message": value,
                         "time": params.peak.time
                     }
