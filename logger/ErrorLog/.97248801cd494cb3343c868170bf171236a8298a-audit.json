@@ -1,0 +1,60 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "logger\\ErrorLog\\.97248801cd494cb3343c868170bf171236a8298a-audit.json",
+    "files": [
+        {
+            "date": 1692691477252,
+            "name": "logger\\ErrorLog\\errorResults.08-22-2023",
+            "hash": "e495da32eff96c14210daf3d46dcf08e24ec942337221eb763ec92a250cf3872"
+        },
+        {
+            "date": 1692850461945,
+            "name": "logger\\ErrorLog\\errorResults.08-24-2023",
+            "hash": "94fa2a9547e16d2f9a933aa42bcb5c588546c8816d7eeb3c120548725e240838"
+        },
+        {
+            "date": 1692945756613,
+            "name": "logger\\ErrorLog\\errorResults.08-25-2023",
+            "hash": "8db64a523526c0ba865e3a0b86f1729e44a1e5dc64528931dd261ec9c2ccb9cb"
+        },
+        {
+            "date": 1693202883731,
+            "name": "logger\\ErrorLog\\errorResults.08-28-2023",
+            "hash": "a7fb39be1b00fb781b05f9a09cb45ce75c1fbd69a35f9dd5ce7f00258d1e4aac"
+        },
+        {
+            "date": 1693378927263,
+            "name": "logger\\ErrorLog\\errorResults.08-30-2023",
+            "hash": "582e464678a565825a0266fb15c3220e8850962f6c9d717591302e503bc1a513"
+        },
+        {
+            "date": 1693453360747,
+            "name": "logger\\ErrorLog\\errorResults.08-31-2023",
+            "hash": "55c7c01d60946ca6d9a13502ca3e731373474e1dc3310b653b0a6480dc57fdb5"
+        },
+        {
+            "date": 1693539227746,
+            "name": "logger\\ErrorLog\\errorResults.09-01-2023",
+            "hash": "87c59ec2ce5683138f2a641cdd94b92959c529f4a3f90d62be694fd142d18113"
+        },
+        {
+            "date": 1693627076567,
+            "name": "logger\\ErrorLog\\errorResults.09-02-2023",
+            "hash": "48f37c9b1e117d55f50b2fecd4abb063e5cfa3aefc84c6be54dba8fb0a30c94f"
+        },
+        {
+            "date": 1693801362103,
+            "name": "logger\\ErrorLog\\errorResults.09-04-2023",
+            "hash": "1f828de39c5e186d89654042e91ccde8ca235a9ae0c62b534627e51789f3e2bd"
+        },
+        {
+            "date": 1694059676241,
+            "name": "logger\\ErrorLog\\errorResults.09-07-2023",
+            "hash": "c5aa91e575247f6810de40ea59151f5a4e00b52797739ebbec75810aa3d7a0b2"
+        }
+    ],
+    "hashType": "sha256"
+}
