@@ -26,7 +26,7 @@ let timeincidents = async (params) => {
                 }
                 }
             };
-            let responseData = await invoke.makeHttpCall("post", "update", postdata);
+            let responseData = await invoke.makeHttpCall_userDataService("post", "update", postdata);
             if (responseData && responseData.data && responseData.data.statusMessage) {
                 return { success: true, message: "Record inserted sucessfull" }
             } else {
@@ -68,7 +68,7 @@ let timeincidents = async (params) => {
                         }
                     }
                 };
-                let responseData = await invoke.makeHttpCall("post", "update", postdata);
+                let responseData = await invoke.makeHmakeHttpCall_userDataServicettpCall("post", "update", postdata);
                 if (responseData && responseData.data && responseData.data.statusMessage) {
                     return { success: true, message: "Record inserted sucessfull" }
                 } else {
@@ -95,7 +95,7 @@ let timeincidents = async (params) => {
                     }
                 }
             };
-            let responseData = await invoke.makeHttpCall("post", "update", postdata);
+            let responseData = await invoke.makeHttpCall_userDataService("post", "update", postdata);
             if (responseData && responseData.data && responseData.data.statusMessage) {
                 return { success: true, message: "Record inserted sucessfull" }
             } else {
@@ -147,7 +147,7 @@ let time = async (params) => {
             docType: 0,
             query: data
         };
-        let responseData = await invoke.makeHttpCall("post", "write", postdata);
+        let responseData = await invoke.makeHttpCall_userDataService("post", "write", postdata);
         if (responseData && responseData.data && responseData.data.statusMessage._id) {
             return { success: true, message: "Record inserted sucessfull" }
         } else {
