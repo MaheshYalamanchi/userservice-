@@ -491,6 +491,58 @@ let reportlog = async (params) => {
     }
   }
 };
+let overview = async (params) => {
+  try {
+    var getdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "rooms",
+      docType: 1,
+      query: [
+        { $match: { $or: [{ status: "stopped" },{ status: "paused" },{ status: "started" }]}},
+        { $facet: { stoppedCount: [{$match: { status: "stopped" }}, { $group: { _id: null,stopped: { $sum: 1 } } }],
+            pausedCount: [ {$match: { status: "paused" } },{$group: { _id: null,paused: { $sum: 1 } }}],
+            startedCount: [{$match: { status: "started" } },{ $group: {_id: null,started: { $sum: 1 } }}]}}
+      ]
+    };
+    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+    if (responseData && responseData.data) {
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "users",
+        docType: 1,
+        query: [
+          {  $group: { _id: null, totalCount: { $sum: 1 } } }
+        ]
+      };
+      let fetchData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      const statusMessage = responseData?.data?.statusMessage?.[0] || {};
+      const stoppedCount = statusMessage.stoppedCount?.[0]?.stopped ?? 0;
+      const pausedCount = statusMessage.pausedCount?.[0]?.paused ?? 0;
+      const startedCount = statusMessage.startedCount?.[0]?.started ?? 0;
+      const totalstudents = fetchData.data.statusMessage[0].totalCount ?? 0;
+      var data ={
+        "Exam Stopped" : stoppedCount,
+        "Exam Paused" : pausedCount,
+        "Exam Started" : startedCount,
+        "Completed Students" : stoppedCount,
+        "Total Exams" : stoppedCount + pausedCount + startedCount,
+        "Total Students" : totalstudents
+      }
+      return { success: true, message: data}
+    } else {
+      return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleupdate,
@@ -506,5 +558,6 @@ module.exports = {
   getmenubasedonrole,
   sessionstatus,
   truestatus,
-  reportlog
+  reportlog,
+  overview
 }
