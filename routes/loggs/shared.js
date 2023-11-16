@@ -68,7 +68,7 @@ let timeincidents = async (params) => {
                         }
                     }
                 };
-                let responseData = await invoke.makeHmakeHttpCall_userDataServicettpCall("post", "update", postdata);
+                let responseData = await invoke.makeHttpCall_userDataService("post", "update", postdata);
                 if (responseData && responseData.data && responseData.data.statusMessage) {
                     return { success: true, message: "Record inserted sucessfull" }
                 } else {
