@@ -8,7 +8,7 @@ module.exports = function (params) {
             if(req.body){
                 let result = await services.reportlog(req.body);
                 if (result && result.success) {
-                    let response = await invoke.makeHttpCall("get", "closeconnection");
+                    // let response = await invoke.makeHttpCall("get", "closeconnection");
                     app.logger.info({ success: true, message: result.message });
                     app.http.customResponse(res, result.message, 200);
                 } else {
