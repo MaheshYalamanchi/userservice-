@@ -286,6 +286,9 @@ let menuget = async (params) => {
       docType: 1,
       query: [
         {
+          "$match": { isActive: true }
+        },
+        {
           $project: { displayName:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,iconName:1,route:1,isActive:1,_id:0}
         }
       ]
