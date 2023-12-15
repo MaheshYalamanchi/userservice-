@@ -6,7 +6,7 @@ const { METHODS } = require("http");
 const { default: jwtDecode } = require("jwt-decode");
 let reportlog = async (params) => {
   try {
-    jsondata = {
+    let jsondata = {
       b1: "Browser not supported",
       b2: "Focus changed to a different window",
       b3: "Full-screen mode is disabled",
