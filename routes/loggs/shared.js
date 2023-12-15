@@ -6,31 +6,35 @@ let timeincidents = async (params) => {
     try {
         if(params.peak.peak){
             var metrics = params.peak.peak
-            var value = jsondata[metrics];
-            var id = params.room[0].room
-            var postdata = {
-                url:process.env.MONGO_URI,
-                database: "proctor",
-                model: "room_log",
-                docType: 0,
-                query: {
-                filter: { "room": id },
-                update:{ 
-                    $push: { 
-                    "logmsg": {
-                        "peak": metrics,
-                        "message": value,
-                        "time": params.peak.time
+            var value = params.metrics[metrics];
+            if(value){
+                var id = params.room[0].room
+                var postdata = {
+                    url:process.env.MONGO_URI,
+                    database: "proctor",
+                    model: "room_log",
+                    docType: 0,
+                    query: {
+                    filter: { "room": id },
+                    update:{ 
+                        $push: { 
+                        "logmsg": {
+                            "peak": metrics,
+                            "message": value,
+                            "time": params.peak.time
+                        }
+                        }
                     }
                     }
+                };
+                let responseData = await invoke.makeHttpCall_userDataService("post", "update", postdata);
+                if (responseData && responseData.data && responseData.data.statusMessage) {
+                    return { success: true, message: "Record inserted sucessfull" }
+                } else {
+                    return { success: false, message: 'Data Not inserted' }
                 }
-                }
-            };
-            let responseData = await invoke.makeHttpCall_userDataService("post", "update", postdata);
-            if (responseData && responseData.data && responseData.data.statusMessage) {
-                return { success: true, message: "Record inserted sucessfull" }
             } else {
-                return { success: false, message: 'Data Not inserted' }
+                return { success: false, message: 'Metrics are not available' }
             }
         }else if(params.peak){
             if(params.peak.submittime){
