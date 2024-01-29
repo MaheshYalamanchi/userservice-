@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: userservice
-          image: proctordev.azurecr.io/userservice:$tag
+          image: proctorprod.azurecr.io/userservice:$tag
           imagePullPolicy: Always
           ports:
             - containerPort: 3005
