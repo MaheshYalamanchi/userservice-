@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: userservice
+  namespace: proctor-prod
 spec:
   replicas: 1
   selector:
@@ -15,30 +16,30 @@ spec:
     spec:
       containers:
         - name: userservice
-          image: proctorprod.azurecr.io/userservice:$tag
+          image: proctordev.azurecr.io/userservice:$tag
           imagePullPolicy: Always
           ports:
             - containerPort: 3005
           env:
             - name: DATA_SERVICE_ENDPOINT
-              valueFrom:proctor-dev-env
+              valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-prod-env
                   key: DATA_SERVICE_ENDPOINT
             - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-prod-env
                   key: MONGO_URI
             - name: USERS_DATA_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: 
+                  name: proctor-prod-env
                   key: USERS_DATA_SERVICE_ENDPOINT
             - name: ROOMS_DATA_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: proctor-dev-env
+                  name: proctor-prod-env
                   key: ROOMS_DATA_SERVICE_ENDPOINT
       imagePullSecrets:
         - name: mysecret
