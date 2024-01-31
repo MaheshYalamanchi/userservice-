@@ -41,5 +41,3 @@ spec:
                   key: ROOMS_DATA_SERVICE_ENDPOINT
       imagePullSecrets:
         - name: mysecret
-      nodeSelector:
-        agentpool: proctordevqa
