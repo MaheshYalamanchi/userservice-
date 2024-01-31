@@ -241,7 +241,7 @@ let groupdelete = async (params) => {
 let menucreate = async (params) => {
   try {
     const data = {
-      "menuname": params.menuname,
+      "displayName": params.menuname,
       "roleId": params.roleId,
       "createdBy": params.createdBy,
       "updatedBy": params.updatedBy
@@ -286,13 +286,10 @@ let menuget = async (params) => {
       docType: 1,
       query: [
         {
-          "$addFields": { "_id": { "$toString": "$_id" } }
+          "$match": { isActive: true }
         },
         {
-          "$match": { "_id": params.menuId }
-        },
-        {
-          $project: { menuname:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,isActive:1,_id:0}
+          $project: { displayName:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,iconName:1,route:1,isActive:1,_id:0}
         }
       ]
     };
@@ -464,6 +461,91 @@ let sessionstatus = async (params) => {
     }
   }
 };
+let reportlog = async (params) => {
+  try {
+    var getdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "reportlog",
+      docType: 1,
+      query: [
+        {
+          "$match": {
+            "$or": [ { "roomId": params.roomId },{ "student": params.userId }]
+          }
+        },
+        {
+          "$project": { "_id": 0 }
+        }
+      ]
+    };
+    let fetchData = await invoke.makeHttpCall("post", "aggregate", getdata);
+    if (fetchData && fetchData.data) {
+      return { success: true, message: fetchData.data.statusMessage }
+    } else {
+      return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
+let overview = async (params) => {
+  try {
+    var getdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "rooms",
+      docType: 1,
+      query: [
+        { $match: { $or: [{ status: "stopped" },{ status: "paused" },{ status: "started" }]}},
+        { $facet: { stoppedCount: [{$match: { status: "stopped" }}, { $group: { _id: null,stopped: { $sum: 1 } } }],
+            pausedCount: [ {$match: { status: "paused" } },{$group: { _id: null,paused: { $sum: 1 } }}],
+            startedCount: [{$match: { status: "started" } },{ $group: {_id: null,started: { $sum: 1 } }}]}}
+      ]
+    };
+    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+    if (responseData && responseData.data) {
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "users",
+        docType: 1,
+        query: [
+          {  $group: { _id: null, totalCount: { $sum: 1 } } }
+        ]
+      };
+      let fetchData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      const statusMessage = responseData?.data?.statusMessage?.[0] || {};
+      const stoppedCount = statusMessage.stoppedCount?.[0]?.stopped ?? 0;
+      const pausedCount = statusMessage.pausedCount?.[0]?.paused ?? 0;
+      const startedCount = statusMessage.startedCount?.[0]?.started ?? 0;
+      const totalstudents = fetchData.data.statusMessage[0].totalCount ?? 0;
+      var data ={
+        "Exam Stopped" : stoppedCount,
+        "Exam Paused" : pausedCount,
+        "Exam Started" : startedCount,
+        "Completed Students" : stoppedCount,
+        "Total Exams" : stoppedCount + pausedCount + startedCount,
+        "Total Students" : totalstudents
+      }
+      return { success: true, message: data}
+    } else {
+      return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleupdate,
@@ -479,4 +561,6 @@ module.exports = {
   getmenubasedonrole,
   sessionstatus,
   truestatus,
+  reportlog,
+  overview
 }

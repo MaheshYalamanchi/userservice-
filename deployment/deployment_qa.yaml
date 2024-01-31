@@ -30,5 +30,17 @@ spec:
                 secretKeyRef:
                   name: proctor-qa-env
                   key: MONGO_URI
+            - name: USERS_DATA_SERVICE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-qa-env
+                  key: USERS_DATA_SERVICE_ENDPOINT
+            - name: ROOMS_DATA_SERVICE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-qa-env
+                  key: ROOMS_DATA_SERVICE_ENDPOINT
       imagePullSecrets:
         - name: mysecret
+      nodeSelector:
+        agentpool: proctordevqa

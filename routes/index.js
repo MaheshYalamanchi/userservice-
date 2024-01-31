@@ -176,10 +176,10 @@ module.exports = function (params) {
             }
         }
   });
-  app.get('/user/menuget/:menuId', async(req, res) => {
+  app.get('/user/menuget', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.menuget(req.params)
+              let result = await sharedSevices.menuget()
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
@@ -262,4 +262,38 @@ module.exports = function (params) {
       }
     }
 });
+  app.get('/user/reportlog/:roomId/:userId', async(req, res) => {
+    "use strict";
+          try {
+              let result = await sharedSevices.reportlog(req.params)
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              }  else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+        }
+  });
+  app.get('/user/overview', async(req, res) => {
+    "use strict";
+          try {
+              let result = await sharedSevices.overview()
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              }  else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            } 
+          } catch (error) {
+            if (error && error.message) {
+                app.http.customResponse(res, { success: false, message: error.message }, 400)
+            } else {
+                app.http.customResponse(res, { success: false, message: error }, 400)
+            }
+        }
+  });
 }
