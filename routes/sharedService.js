@@ -282,20 +282,33 @@ let menuget = async (params) => {
     var getdata = {
       url:process.env.MONGO_URI,
       database: "proctor",
-      model: "menu",
+      model: "role",
       docType: 1,
       query: [
+        {$match:{rolename:params}},
+        { "$unwind": "$menuId" },
         {
-          "$match": { isActive: true }
+            $lookup:{
+                from:"menu",
+                localField:"menuId",
+                foreignField:"_id",
+                as:"menuData"
+            }
         },
         {
-          $project: { displayName:1,createdBy:1,updatedBy:1,createdAt:1,updatedAt:1,iconName:1,route:1,isActive:1,_id:0}
+            $project:{
+                menu:"$menuData"
+            }
         }
-      ]
+    ]
     };
     let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
     if (responseData && responseData.data) {
-      return { success: true, message: responseData.data.statusMessage }
+      var menuArray=[]
+      for (const iterator of responseData.data.statusMessage) {
+        menuArray.push(iterator.menu[0])
+      }
+      return { success: true, message: menuArray }
     } else {
       return { success: false, message: 'Data Not Found' }
     }
