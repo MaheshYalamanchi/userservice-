@@ -179,7 +179,7 @@ module.exports = function (params) {
   app.get('/user/menuget', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.menuget()
+              let result = await sharedSevices.menuget(req.query.role)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {
