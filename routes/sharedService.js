@@ -559,6 +559,37 @@ let overview = async (params) => {
     }
   }
 };
+let getSessionsStatus = async (params) => {
+  try {
+    var getdata = {
+      url:process.env.MONGO_URI,
+      database: "proctor",
+      model: "rooms",
+      docType: 1,
+      query: [
+        {
+          $match: {_id: { $in: params.roomIdArr}}
+        },
+        {
+          $project:{id:"$_id",status:"$status",_id:0}
+        }
+    ]
+    };
+    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+    if (responseData && responseData.data && responseData.data.statusMessage ) {
+      return { success: true, message: responseData.data.statusMessage}
+    } else {
+        return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleupdate,
@@ -575,5 +606,6 @@ module.exports = {
   sessionstatus,
   truestatus,
   reportlog,
-  overview
+  overview,
+  getSessionsStatus
 }
