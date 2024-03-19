@@ -4,14 +4,23 @@ const { METHODS } = require("http");
 
 let timeincidents = async (params) => {
     try {
+        let url;
+        let database;
+        if(params && params.tenantResponse && params.tenantResponse.success){
+            url = params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName;
+            database = params.tenantResponse.message.databaseName;
+        } else {
+            url = process.env.MONGO_URI+'/'+process.env.DATABASENAME;
+            database = process.env.DATABASENAME;
+        }
         if (params.peak.peak) {
             var metrics = params.peak.peak
             var value = params.metrics[metrics];
             if (value) {
                 var id = params.room[0].room
                 var postdata = {
-                    url: params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName,
-					database: params.tenantResponse.message.databaseName,
+                    url: url,
+					database: database,
                     model: "room_log",
                     docType: 0,
                     query: {
@@ -54,8 +63,8 @@ let timeincidents = async (params) => {
                 var exam = params.peak.message
                 var id = params.room[0]._id
                 var postdata = {
-                    url: params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName,
-					database: params.tenantResponse.message.databaseName,
+                    url: url,
+					database: database,
                     model: "room_log",
                     docType: 0,
                     query: {
@@ -81,8 +90,8 @@ let timeincidents = async (params) => {
             }
             var id = params.room[0]._id
             var postdata = {
-                url: params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName,
-				database: params.tenantResponse.message.databaseName,
+                url: url,
+				database: database,
                 model: "room_log",
                 docType: 0,
                 query: {
@@ -116,6 +125,15 @@ let timeincidents = async (params) => {
 };
 let time = async (params) => {
     try {
+        let url;
+        let database;
+        if(params && params.tenantResponse && params.tenantResponse.success){
+            url = params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName;
+            database = params.tenantResponse.message.databaseName;
+        } else {
+            url = process.env.MONGO_URI+'/'+process.env.DATABASENAME;
+            database = process.env.DATABASENAME;
+        }
         if (params.peak.submittime) {
             var time = params.peak.submittime
             var exam = "Exam submited"
@@ -145,8 +163,8 @@ let time = async (params) => {
             "updatedAt": new Date()
         }
         var postdata = {
-            url: params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName,
-			database: params.tenantResponse.message.databaseName,
+            url: url,
+			database: database,
             model: "room_log",
             docType: 0,
             query: data
