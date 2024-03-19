@@ -296,4 +296,25 @@ module.exports = function (params) {
             }
         }
   });
+  app.post('/user/getSessionsStatus', async(req, res) => {
+    "use strict";
+    try {
+      if(req && req.body){
+        let result = await sharedSevices.getSessionsStatus(req.body)
+        if (result && result.success) {
+          app.http.customResponse(res,{ success: true, message: result.message }, 200);
+        }  else {
+          app.http.customResponse(res, { success: false, message: 'Data Not found' }, 200);
+        }
+      } else {
+        app.http.customResponse(res, { success: false, message: 'Provide proper input details' }, 200);
+      }
+    }catch (error) {
+      if (error && error.message) {
+          app.http.customResponse(res, { success: false, message: error.message }, 400)
+      } else {
+          app.http.customResponse(res, { success: false, message: error }, 400)
+      }
+    }
+  });
 }
