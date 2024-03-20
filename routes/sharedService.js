@@ -561,25 +561,34 @@ let overview = async (params) => {
 };
 let getSessionsStatus = async (params) => {
   try {
-    var getdata = {
-      url:process.env.MONGO_URI,
-      database: "proctor",
-      model: "rooms",
-      docType: 1,
-      query: [
-        {
-          $match: {_id: { $in: params.roomIdArr}}
-        },
-        {
-          $project:{id:"$_id",status:"$status",_id:0}
-        }
-    ]
-    };
-    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-    if (responseData && responseData.data && responseData.data.statusMessage ) {
-      return { success: true, message: responseData.data.statusMessage}
-    } else {
+    if(params && params.version && params.version == "V1"){
+      let getSessionsResponse = await invoke.makeHttpCallmapReduce("post","getSessionStatus",params)
+      if(getSessionsResponse && getSessionsResponse.data && getSessionsResponse.data.success){
+        return { success: true, message: getSessionsResponse.data.message}
+      } else{
         return { success: false, message: 'Data Not Found' }
+      }
+    } else if(params && params.version && params.version == "V2"){
+      var getdata = {
+        url:process.env.MONGO_URI,
+        database: "proctor",
+        model: "rooms",
+        docType: 1,
+        query: [
+          {
+            $match: {_id: { $in: params.roomIdArr}}
+          },
+          {
+            $project:{id:"$_id",status:"$status",_id:0}
+          }
+      ]
+      };
+      let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage ) {
+        return { success: true, message: responseData.data.statusMessage}
+      } else {
+          return { success: false, message: 'Data Not Found' }
+      }
     }
   }
   catch (error) {
