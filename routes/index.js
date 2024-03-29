@@ -176,14 +176,17 @@ module.exports = function (params) {
             }
         }
   });
-  app.get('/user/menuget', async(req, res) => {
+  app.post('/user/menuget', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.menuget(req.query.role)
-              if (result && result.success) {
-                app.http.customResponse(res,{ success: true, message: result.message }, 200);
-              }  else {
-                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+            if(req && req.body){
+              req.query.authorization = req.body.authorization;
+            }
+            let result = await sharedSevices.menuget(req.query)
+            if (result && result.success) {
+              app.http.customResponse(res,{ success: true, message: result.message }, 200);
+            }  else {
+              app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
             } 
           } catch (error) {
             if (error && error.message) {
