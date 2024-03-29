@@ -1,7 +1,7 @@
 const invoke = require("../lib/http/invoke");
 const schedule = require("./organization/schedule")
 const globalMsg = require('../configuration/messages/message');
-const _schedule = require('../loggs/shared');
+const _schedule = require('./loggs/shared');
 const jwt_decode = require('jwt-decode');
 
 let rolecreation = async (params) => {
