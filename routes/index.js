@@ -279,10 +279,10 @@ module.exports = function (params) {
             }
         }
   });
-  app.get('/user/overview', async(req, res) => {
+  app.post('/user/overview', async(req, res) => {
     "use strict";
           try {
-              let result = await sharedSevices.overview()
+              let result = await sharedSevices.overview(params.body)
               if (result && result.success) {
                 app.http.customResponse(res,{ success: true, message: result.message }, 200);
               }  else {

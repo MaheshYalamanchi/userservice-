@@ -1,6 +1,8 @@
 const invoke = require("../lib/http/invoke");
 const schedule = require("./organization/schedule")
 const globalMsg = require('../configuration/messages/message');
+const _schedule = require('../loggs/shared');
+const jwt_decode = require('jwt-decode');
 
 let rolecreation = async (params) => {
   try {
@@ -509,9 +511,30 @@ let reportlog = async (params) => {
 };
 let overview = async (params) => {
   try {
+    let url;
+    let database;
+    let tenantResponse;
+    if(params && params.authorization){
+      let decodeToken = jwt_decode(params.authorization);
+      if (decodeToken && decodeToken.tenantId) {
+        tenantResponse = await _schedule.tenantResponse(decodeToken);
+        if (tenantResponse && tenantResponse.success) {
+          url = tenantResponse.message.connectionString + '/' + tenantResponse.message.databaseName;
+          database = tenantResponse.message.databaseName;
+        } else {
+          return { success: false, message: tenantResponse.message }
+        }
+      } else {
+        url = process.env.MONGO_URI + '/' + process.env.DATABASENAME;
+        database = process.env.DATABASENAME;
+      }
+    } else {
+      url = process.env.MONGO_URI + '/' + process.env.DATABASENAME;
+      database = process.env.DATABASENAME;
+    }
     var getdata = {
-      url:process.env.MONGO_URI,
-      database: "proctor",
+      url: url,
+      database: database,
       model: "rooms",
       docType: 1,
       query: [
@@ -524,8 +547,8 @@ let overview = async (params) => {
     let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
     if (responseData && responseData.data) {
       var getdata = {
-        url:process.env.MONGO_URI,
-        database: "proctor",
+        url: url,
+        database: database,
         model: "users",
         docType: 1,
         query: [
@@ -561,9 +584,30 @@ let overview = async (params) => {
 };
 let getSessionsStatus = async (params) => {
   try {
+    let url;
+    let database;
+    let tenantResponse;
+    if(params && params.authorization){
+      let decodeToken = jwt_decode(params.authorization);
+      if (decodeToken && decodeToken.tenantId) {
+        tenantResponse = await _schedule.tenantResponse(decodeToken);
+        if (tenantResponse && tenantResponse.success) {
+          url = tenantResponse.message.connectionString + '/' + tenantResponse.message.databaseName;
+          database = tenantResponse.message.databaseName;
+        } else {
+          return { success: false, message: tenantResponse.message }
+        }
+      } else {
+        url = process.env.MONGO_URI + '/' + process.env.DATABASENAME;
+        database = process.env.DATABASENAME;
+      }
+    } else {
+      url = process.env.MONGO_URI + '/' + process.env.DATABASENAME;
+      database = process.env.DATABASENAME;
+    }
     var getdata = {
-      url:process.env.MONGO_URI,
-      database: "proctor",
+      url:url,
+      database: database,
       model: "rooms",
       docType: 1,
       query: [
