@@ -27,9 +27,10 @@ module.exports = function (params) {
             }
         }
     });
-    app.get('/api/chat/screen/:roomId', async (req, res,next) => {
+    app.post('/api/chat/screen/:roomId', async (req, res,next) => {
         try {
             if(req.params){
+                req.params.authorization = params.body.authorization 
                 let result = await services.screenshotget(req.params);
                 if (result && result.success) {
                     app.http.customResponse(res,{ success: true, message: result.message }, 200);

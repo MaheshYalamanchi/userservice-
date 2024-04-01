@@ -118,12 +118,14 @@ let screenshotget = async (params) => {
   try {
     var data = {
       roomId: params.roomId,
-      filename: "screen.jpg"
+      filename: "screen.jpg",
+      authorization: params.authorization
     }
     let responseData = await shared.filename(data)
     var jsondata = {
       roomId: params.roomId,
-      filename: "webcam.webm"
+      filename: "webcam.webm",
+      authorization: params.authorization
     }
     let response = await shared.filename(jsondata)
     if (response && response.success) {

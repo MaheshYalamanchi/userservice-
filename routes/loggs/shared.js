@@ -187,9 +187,25 @@ let time = async (params) => {
 };
 let filename = async (params) => {
     try {
+        let decodeToken = jwt_decode(params.authorization);
+        let url;
+        let database;
+        let tenantResponse;
+        if(decodeToken && decodeToken.tenantId){
+            tenantResponse = await getTennant(decodeToken);
+            if (tenantResponse && tenantResponse.success){
+                url = tenantResponse.message.connectionString+'/'+tenantResponse.message.databaseName;
+                database = tenantResponse.message.databaseName;
+            } else {
+                return { success: false, message: tenantResponse.message }
+            }
+        } else {
+            url = process.env.MONGO_URI+'/'+process.env.DATABASENAME;
+            database = process.env.DATABASENAME;
+        }
         var getdata = {
-            url: process.env.MONGO_URI,
-            database: "proctor",
+            url: url,
+            database: database,
             model: "chats",
             docType: 1,
             query: [
