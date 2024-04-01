@@ -180,14 +180,15 @@ module.exports = function (params) {
     "use strict";
           try {
             if(req && req.body){
-              req.query.authorization = req.body.authorization;
+              let result = await sharedSevices.menuget(req.body)
+              if (result && result.success) {
+                app.http.customResponse(res,{ success: true, message: result.message }, 200);
+              }  else {
+                app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
+              } 
+            } else {
+              app.http.customResponse(res, { success: false, message: 'Missing requset body' }, 200);
             }
-            let result = await sharedSevices.menuget(req.query)
-            if (result && result.success) {
-              app.http.customResponse(res,{ success: true, message: result.message }, 200);
-            }  else {
-              app.http.customResponse(res, { success: false, message: 'Data Not Found' }, 200);
-            } 
           } catch (error) {
             if (error && error.message) {
                 app.http.customResponse(res, { success: false, message: error.message }, 400)
