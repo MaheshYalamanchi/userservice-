@@ -38,10 +38,10 @@ spec:
                 name: proctor-uat-env
                 key: ROOMS_DATA_SERVICE_ENDPOINT
           - name: MAPREDUCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env
-                  key: MAPREDUCE_URL
+            valueFrom:
+              secretKeyRef:
+                name: proctor-uat-env
+                key: MAPREDUCE_URL
           ports:
           - containerPort: 3005
       imagePullSecrets:
