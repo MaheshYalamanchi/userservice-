@@ -561,17 +561,14 @@ let overview = async (params) => {
 };
 let getSessionsStatus = async (params) => {
   try {
-    console.log(params,'for v2 test')
     if(params && params.version && params.version == "V1"){
       let getSessionsResponse = await invoke.makeHttpCallmapReduce("post","getSessionStatus",params)
-      console.log(getSessionsResponse,'v1..............')
       if(getSessionsResponse && getSessionsResponse.data && getSessionsResponse.data.success){
         return { success: true, message: getSessionsResponse.data.message}
       } else{
         return { success: false, message: 'Data Not Found' }
       }
     } else if(params && params.version && params.version == "V2"){
-      console.log(params,'..........')
       var getdata = {
         url:process.env.MONGO_URI,
         database: "proctor",
@@ -587,7 +584,6 @@ let getSessionsStatus = async (params) => {
       ]
       };
       let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-      console.log(responseData.data,'v2..........')
       if (responseData && responseData.data && responseData.data.statusMessage ) {
         return { success: true, message: responseData.data.statusMessage}
       } else {

@@ -301,7 +301,6 @@ module.exports = function (params) {
     try {
       if(req && req.body){
         let result = await sharedSevices.getSessionsStatus(req.body)
-        console.log(result,'result')
         if (result && result.success) {
           app.http.customResponse(res,{ success: true, message: result.message }, 200);
         }  else {
