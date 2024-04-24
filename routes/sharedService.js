@@ -561,6 +561,7 @@ let overview = async (params) => {
 };
 let getSessionsStatus = async (params) => {
   try {
+    console.log(params,'for v2 test')
     if(params && params.version && params.version == "V1"){
       let getSessionsResponse = await invoke.makeHttpCallmapReduce("post","getSessionStatus",params)
       console.log(getSessionsResponse,'v1..............')
@@ -570,6 +571,7 @@ let getSessionsStatus = async (params) => {
         return { success: false, message: 'Data Not Found' }
       }
     } else if(params && params.version && params.version == "V2"){
+      console.log(params,'..........')
       var getdata = {
         url:process.env.MONGO_URI,
         database: "proctor",
