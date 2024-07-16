@@ -55,4 +55,4 @@ spec:
       imagePullSecrets:
         - name: mysecret
       nodeSelector:
-        agentpool: proctordevqa
+        agentpool: proctoruat
