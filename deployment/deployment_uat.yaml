@@ -13,73 +13,30 @@ spec:
       labels:
         app: userservice
     spec:
+      volumes:
+      - name: 'data'
+        persistentVolumeClaim:
+          claimName: my-azurefile
       containers:
         - name: userservice
           image: proctordev.azurecr.io/userservice:$tag
           imagePullPolicy: Always
           ports:
             - containerPort: 3005
+          volumeMounts:
+          - name: 'data'
+            mountPath: '/mnt'
           env:
             - name: DATA_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: proctor-uat-env 
+                  name: proctor-uat-env
                   key: DATA_SERVICE_ENDPOINT
             - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
-                  name: proctor-uat-env 
+                  name: proctor-uat-env
                   key: MONGO_URI
-            - name: SubscriptionKey
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: SubscriptionKey
-            - name: Endpoint
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: Endpoint
-            - name: AZURE_SERVICE_ENDPOINT
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: AZURE_SERVICE_ENDPOINT
-            - name: LOCATION
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: LOCATION
-            - name: ACCOUNT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: ACCOUNT_ID
-            - name: SUBSCRIPTION_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: SUBSCRIPTION_KEY
-            - name: CACHE_CONTROL
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: CACHE_CONTROL
-            - name: AZURE_PORTAL
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: AZURE_PORTAL
-            - name: BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: proctor-uat-env 
-                  key: BASE_URL
-            - name: proctorui
-              valueFrom: null
-              secretKeyRef:
-                name: proctor-uat-env 
-                key: proctorui
             - name: USERS_DATA_SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
@@ -90,7 +47,12 @@ spec:
                 secretKeyRef:
                   name: proctor-uat-env
                   key: ROOMS_DATA_SERVICE_ENDPOINT
-          ports:
-          - containerPort: 3005     
+            - name: DATABASENAME
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-uat-env
+                  key: DATABASENAME
       imagePullSecrets:
         - name: mysecret
+      nodeSelector:
+        agentpool: proctordevqa
