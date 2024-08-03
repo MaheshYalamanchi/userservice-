@@ -701,6 +701,54 @@ let getScheduleList = async (params) => {
     }
   }
 };
+
+let broadcastMessages = async (params) => {
+  try {
+    let url;
+    let database;
+    let tenantResponse;
+    if(params && params.authorization){
+      let decodeToken = jwt_decode(params.authorization);
+      if (decodeToken && decodeToken.tenantId) {
+        tenantResponse = await _schedule.tenantResponse(decodeToken);
+        if (tenantResponse && tenantResponse.success) {
+          url = tenantResponse.message.connectionString + '/' + tenantResponse.message.databaseName;
+          database = tenantResponse.message.databaseName;
+        } else {
+          return { success: false, message: tenantResponse.message }
+        }
+      } else {
+        url = process.env.MONGO_URI + '/' + process.env.DATABASENAME;
+        database = process.env.DATABASENAME;
+      }
+    } else {
+      url = process.env.MONGO_URI + '/' + process.env.DATABASENAME;
+      database = process.env.DATABASENAME;
+    }
+    var getdata = {
+      url:url,
+      database: database,
+      model: "chats",
+      docType: 1,
+      query:[
+        {$match:{ room:"sendToAll", scheduleName:params.scheduleName, testId:params.testId}}
+      ]
+    };
+    let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+    if (responseData && responseData.data && responseData.data.statusMessage ) {
+      return { success: true, message: responseData.data.statusMessage}
+    } else {
+        return { success: false, message: 'Data Not Found' }
+    }
+  }
+  catch (error) {
+    if (error && error.code == 'ECONNREFUSED') {
+      return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+    } else {
+      return { success: false, message: error }
+    }
+  }
+};
 module.exports = {
   rolecreation,
   roleupdate,
@@ -719,5 +767,6 @@ module.exports = {
   reportlog,
   overview,
   getSessionsStatus,
-  getScheduleList
+  getScheduleList,
+  broadcastMessages
 }
