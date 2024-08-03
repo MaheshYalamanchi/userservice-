@@ -731,7 +731,8 @@ let broadcastMessages = async (params) => {
       model: "chats",
       docType: 1,
       query:[
-        {$match:{ room:"sendToAll", scheduleName:params.scheduleName, testId:params.testId}}
+        {$match:{ room:"sendToAll", scheduleName:params.scheduleName, testId:params.testId}},
+        {$sort:{_id:-1}}
       ]
     };
     let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
