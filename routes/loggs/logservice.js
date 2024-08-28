@@ -7,6 +7,10 @@ const _schedule = require('../loggs/shared');
 const jwt_decode = require('jwt-decode');
 let reportlog = async (params) => {
   try {
+    if(!params?.authorization){
+      console.log("Me2 Token========>>>>",params.authorization)
+      return { success: false, message: 'Authorization token missing.' }
+    }
     let decodeToken = jwt_decode(params.authorization);
     let url;
     let database;
