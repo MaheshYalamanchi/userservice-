@@ -791,7 +791,7 @@ let proctorAuthCall = async (params) => {
                   database: tenantResponse.message.databaseName ,
                   model: "users",
                   docType: 1,
-                  query: {_id: decodeToken.id}
+                  query: decodeToken.id
               };
           } else {
               getdata = {
@@ -799,10 +799,10 @@ let proctorAuthCall = async (params) => {
                   database: process.env.DATABASENAME,
                   model: "users",
                   docType: 1,
-                  query: {_id: decodeToken.id}
+                  query: decodeToken.id
               };
           }
-          let responseData = await invoke.makeHttpCall_commonDataService("post", "read", getdata);
+          let responseData = await invoke.makeHttpCall_commonDataService("post", "findById", getdata);
           if (responseData && responseData.data&&responseData.data.statusMessage&&responseData.data.statusMessage._id) {
               var splitToken = params.authorization.split(" ");
               if (decodeToken && decodeToken.room && decodeToken.provider){
