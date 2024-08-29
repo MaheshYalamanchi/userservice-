@@ -52,6 +52,11 @@ spec:
                 secretKeyRef:
                   name: proctor-qa-env
                   key: DATABASENAME
+            - name: COMMON_DATA_SERVICE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-qa-env
+                  key: COMMON_DATA_SERVICE_ENDPOINT
       imagePullSecrets:
         - name: mysecret
       nodeSelector:

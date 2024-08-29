@@ -750,6 +750,89 @@ let broadcastMessages = async (params) => {
     }
   }
 };
+let proctorAuthCall = async (params) => {
+  try {
+      if(!params?.authorization){
+          console.log("Auth Token========>>>>",params.authorization)
+          return { success: false, message: 'Authorization token missing.' }
+      }
+      var decodeToken = jwt_decode(params.authorization);
+      let tenantResponse;
+      if(decodeToken && decodeToken.tenantId ){
+          tenantResponse = await _schedule.getTennant(decodeToken);
+          if (tenantResponse && tenantResponse.success){
+              decodeToken.tenantResponse = tenantResponse;
+      }    else {
+              return { success: false, message: tenantResponse.message }
+          }
+      }
+      if(decodeToken && (decodeToken.room=="check")){
+          let response = await tokenService.authCheckToken(decodeToken);
+          if(response){
+              var token = jwt_decode(response);
+              if (decodeToken.exp){
+                  return {success: true, message: { exp :token.exp, iat: token.iat, id: token.id,
+                      role: token.role,token: response,room:token.room}
+                  }
+              } else {
+                  return {success: true, message: { iat: token.iat, id: token.id,
+                      role: token.role,token: response,room:token.room}
+                  }
+              }
+              
+          } else {
+              return { success: false, message: 'Data Not Found' }
+          }
+      } else if (decodeToken){
+          let getdata;
+          if(tenantResponse && tenantResponse.success){
+              getdata = {
+                  url: tenantResponse.message.connectionString+'/'+tenantResponse.message.databaseName ,
+                  database: tenantResponse.message.databaseName ,
+                  model: "users",
+                  docType: 1,
+                  query: {_id: decodeToken.id}
+              };
+          } else {
+              getdata = {
+                  url: process.env.MONGO_URI+'/'+process.env.DATABASENAME,
+                  database: process.env.DATABASENAME,
+                  model: "users",
+                  docType: 1,
+                  query: {_id: decodeToken.id}
+              };
+          }
+          let responseData = await invoke.makeHttpCall_commonDataService("post", "read", getdata);
+          if (responseData && responseData.data&&responseData.data.statusMessage&&responseData.data.statusMessage._id) {
+              var splitToken = params.authorization.split(" ");
+              if (decodeToken && decodeToken.room && decodeToken.provider){
+                  return {success: true, message: {exp: decodeToken.exp, iat: decodeToken.iat, id: responseData.data.statusMessage._id,
+                          role: responseData.data.statusMessage.role,token: splitToken[1],provider:decodeToken.provider,room:decodeToken.room}
+                  }
+              } else { 
+                  return {
+                      success: true, message: {
+                          exp: decodeToken.exp, iat: decodeToken.iat, id: responseData.data.statusMessage._id,
+                          role: responseData.data.statusMessage.role,
+                          token: splitToken[1]
+                      }
+                  }
+              }
+          } else {
+              return { success: false, message: 'Data Not Found' }
+          }
+      } else {
+          return { success: false, message: 'Invalid Token Error' }
+      }
+  } catch (error) {
+      console.log(error,"authError2====>>>>")
+      if (error && error.code == 'ECONNREFUSED') {
+          return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+      } else {
+          return { success: false, message: error }
+      }
+  }
+};
 module.exports = {
   rolecreation,
   roleupdate,
@@ -769,5 +852,6 @@ module.exports = {
   overview,
   getSessionsStatus,
   getScheduleList,
-  broadcastMessages
+  broadcastMessages,
+  proctorAuthCall
 }
