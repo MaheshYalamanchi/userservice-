@@ -3,6 +3,7 @@ const schedule = require("./organization/schedule")
 const globalMsg = require('../configuration/messages/message');
 const _schedule = require('./loggs/shared');
 const jwt_decode = require('jwt-decode');
+const scheduleService = require('./scheduleService');
 
 let rolecreation = async (params) => {
   try {
@@ -833,6 +834,89 @@ let proctorAuthCall = async (params) => {
       }
   }
 };
+let getDatails = async (params) => {
+  try {  
+      if(!params?.body?.authorization){
+          console.log("Next Token========>>>>",params.body.authorization)
+          return { success: false, message: 'Authorization token missing.' }
+      }
+      decodeToken = jwt_decode(params.body.authorization)
+      let tenantResponse;
+      let url;
+      let database;
+      if(decodeToken && decodeToken.tenantId ){
+          tenantResponse = await _schedule.getTennant(decodeToken);
+          if (tenantResponse && tenantResponse.success){
+              url = tenantResponse.message.connectionString+'/'+tenantResponse.message.databaseName;
+              database = tenantResponse.message.databaseName;
+          } else {
+              return { success: false, message: tenantResponse.message }
+          }
+      } else {
+          url = process.env.MONGO_URI+'/'+process.env.DATABASENAME;
+          database = process.env.DATABASENAME;
+      }
+      let getdata;
+      if (decodeToken && decodeToken.videoass == "VA"){
+          getdata = {
+              url: url,
+              database: database,
+              model: "rooms",
+              docType: 1,
+              query: {_id:params.query.id}
+          };
+      } else {
+          getdata = {
+              url: url,
+              database: database,
+              model: "rooms",
+              docType: 1,
+              query: params.query.id
+          };
+      }
+      let responseData = await invoke.makeHttpCall_roomDataService("post", "findById", getdata);
+      if (responseData && responseData.data && responseData.data.statusMessage) {
+          if(params.body.body.error !== null){
+              params.body.body.createdAt = new Date()
+              const data = {
+                  id : params.query.id,
+                  body : params.body.body,
+                  error : responseData.data.statusMessage.error,
+                  tenantResponse: tenantResponse,
+                  approvalRequest : params?.body?.body?.approvalRequest
+              }
+              let responsemessage = await scheduleService.errorupdate(data)
+          }else if(params?.body?.body?.approve){
+              const data = {
+                  id : params.query.id,
+                  approvalRequest : params?.body?.body?.approvalRequest
+                
+              }
+              let responsemessage = await scheduleService.updateApproveStatus(data)
+          }
+          else{
+              const data = {
+                  ipaddress : params.body.body.ipaddress,
+                  id : params.query.id,
+              }
+              let responsemessage = await scheduleService.updateIpAddress(data)
+          }
+          responseData.data.statusMessage.id = responseData.data.statusMessage._id;
+          delete responseData.data.statusMessage._id
+          return { success: true, message: responseData.data.statusMessage }
+      } else {
+          return { success: false, message: 'Data Not Found' };
+      }
+  } catch (error) {
+      console.log("next Error Body2========>>>>",JSON.stringify(params.body))
+      console.log("next Error2========>>>>",error)
+      if (error && error.code == 'ECONNREFUSED') {
+          return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+      } else {
+          return { success: false, message: error }
+      }
+  }
+};
 module.exports = {
   rolecreation,
   roleupdate,
@@ -853,5 +937,6 @@ module.exports = {
   getSessionsStatus,
   getScheduleList,
   broadcastMessages,
-  proctorAuthCall
+  proctorAuthCall,
+  getDatails
 }
