@@ -1,11 +1,5 @@
-const invoke = require("../../lib/http/invoke");
-const globalMsg = require('../../configuration/messages/message');
-const schedule = require("./schedule")
-var ObjectID = require('mongodb').ObjectID;
-const json = require('../json');
-const moment = require("moment");
-const _schedule = require('../schedule/schedule');
-const jwt_decode = require('jwt-decode');
+const invoke = require("../lib/http/invoke");
+const globalMsg = require('../configuration/messages/message');
 
 let errorupdate =async(params)=>{
     try {
