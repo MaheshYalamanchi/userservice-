@@ -849,6 +849,7 @@ let getDatails = async (params) => {
           if (tenantResponse && tenantResponse.success){
               url = tenantResponse.message.connectionString+'/'+tenantResponse.message.databaseName;
               database = tenantResponse.message.databaseName;
+              params.tenantResponse = tenantResponse;
           } else {
               return { success: false, message: tenantResponse.message }
           }
@@ -876,40 +877,56 @@ let getDatails = async (params) => {
       }
       let responseData = await invoke.makeHttpCall_roomDataService("post", "findById", getdata);
       if (responseData && responseData.data && responseData.data.statusMessage) {
-          if(params.body.body.error !== null){
-              params.body.body.createdAt = new Date()
-              const data = {
-                  id : params.query.id,
-                  body : params.body.body,
-                  error : responseData.data.statusMessage.error,
-                  tenantResponse: tenantResponse,
-                  approvalRequest : params?.body?.body?.approvalRequest
-              }
-              let responsemessage = await scheduleService.errorupdate(data)
-          }else if(params?.body?.body?.approve){
-              const data = {
-                  id : params.query.id,
-                  approvalRequest : params?.body?.body?.approvalRequest
-                
-              }
-              let responsemessage = await scheduleService.updateApproveStatus(data)
-          }
-          else{
-              const data = {
-                  ipaddress : params.body.body.ipaddress,
-                  id : params.query.id,
-              }
-              let responsemessage = await scheduleService.updateIpAddress(data)
-          }
           responseData.data.statusMessage.id = responseData.data.statusMessage._id;
-          delete responseData.data.statusMessage._id
-          return { success: true, message: responseData.data.statusMessage }
+          delete responseData.data.statusMessage._id;
+          params.responseData = responseData;
+          params.url = url;
+          params.database = database;
+          return { success: true, message: responseData.data.statusMessage ,json: params}
       } else {
           return { success: false, message: 'Data Not Found' };
       }
   } catch (error) {
       console.log("next Error Body2========>>>>",JSON.stringify(params.body))
       console.log("next Error2========>>>>",error)
+      if (error && error.code == 'ECONNREFUSED') {
+          return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+      } else {
+          return { success: false, message: error }
+      }
+  }
+};
+
+let getDatailsApprove = async (params) => {
+  try {  
+      if(params.body.body.error !== null){
+          params.body.body.createdAt = new Date()
+          const data = {
+              id : params.query.id,
+              body : params.body.body,
+              error : params.responseData.data.statusMessage.error,
+              tenantResponse: params.tenantResponse,
+              approvalRequest : params?.body?.body?.approvalRequest
+          }
+          let responsemessage = await scheduleService.errorupdate(data)
+      }else if(params?.body?.body?.approve){
+          const data = {
+              id : params.query.id,
+              approvalRequest : params?.body?.body?.approvalRequest
+            
+          }
+          let responsemessage = await scheduleService.updateApproveStatus(data)
+      }
+      else{
+          const data = {
+              ipaddress : params.body.body.ipaddress,
+              id : params.query.id,
+          }
+          let responsemessage = await scheduleService.updateIpAddress(data)
+      }
+  } catch (error) {
+      console.log("next Error Body3========>>>>",JSON.stringify(params))
+      console.log("next Error3========>>>>",error)
       if (error && error.code == 'ECONNREFUSED') {
           return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
       } else {
@@ -938,5 +955,6 @@ module.exports = {
   getScheduleList,
   broadcastMessages,
   proctorAuthCall,
-  getDatails
+  getDatails,
+  getDatailsApprove
 }
