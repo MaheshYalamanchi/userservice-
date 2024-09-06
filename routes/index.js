@@ -386,6 +386,7 @@ module.exports = function (params) {
             if (result && result.success) {
                 app.logger.info({ success: true, message: result.message });
                 app.http.customResponse(res, result.message, 200);
+                console.log("finding request=========>>>>>",JSON.stringify(result.message.json))
                 let getDatailsApproveResposne = await sharedSevices.getDatailsApprove(result.message.json)
             } else {
                 app.logger.info({ success: false, message: result.message });
