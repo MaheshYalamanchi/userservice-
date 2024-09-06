@@ -934,6 +934,81 @@ let getDatailsApprove = async (params) => {
       }
   }
 };
+
+let fetchStreamStatus = async (params) => {
+  try {
+    if(!params?.authorization){
+      console.log("fetchStreamStatus Token========>>>>",params.authorization)
+      return { success: false, message: 'Authorization token missing.' }
+    }
+    var decodeToken = jwt_decode(params.authorization);
+    let tenantResponse;
+    if(decodeToken && decodeToken.tenantId ){
+      tenantResponse = await _schedule.getTennant(decodeToken);
+      if (tenantResponse && tenantResponse.success){
+          decodeToken.tenantResponse = tenantResponse;
+      } else {
+        return { success: false, message: tenantResponse.message }
+      }
+    } else {
+      url = process.env.MONGO_URI+'/'+process.env.DATABASENAME;
+      database = process.env.DATABASENAME;
+    }
+    var sort = -1;
+    var start=0;
+    var postdata = {
+      url: url,
+      database: database,
+      model: "rooms",
+      docType: 1,
+      query: [
+          { $match: { isActive: true,_id:{$in:params.roomIds} } },
+          { "$sort": { startedAt: sort } },
+          { "$skip": start },
+          { "$limit": 30 },
+          { $group: { _id: { status: "$status" }, count: { $sum: 1 } } },
+          { $project: { _id: 0, "status": "$_id.status", "count": 1 } },
+      ]
+    };
+    let response = await invoke.makeHttpCall("post", "aggregate", postdata);
+    if (response && response.data && response.data.statusMessage) {
+        const message = []
+        let mergedCount = 0;
+        for (let obj of response.data.statusMessage) {
+            if (obj.status === 'stopped' || obj.status === 'accepted') {
+                mergedCount += obj.count;
+            } else if (obj.status === 'started') {
+                message.push({ "In Progress": obj.count })
+            } else if (obj.status === 'paused') {
+                message.push({ "Idle": obj.count })
+            } else if (obj.status === 'rejected') {
+                message.push({ "Terminated": obj.count })
+            }
+        }
+        message.push({ "Completed": mergedCount });
+        var jsonData = {
+            'Completed' : 0,
+            "In Progress" : 0,
+            "Idle" : 0,
+            'Terminated' : 0
+        }
+        message.forEach((item) => {
+            const key = Object.keys(item)[0]; 
+            const value = item[key]; 
+            jsonData[key] = value;
+          });
+        return { success: true, message: jsonData }
+    } else {
+        return { success: false, message: 'Data Not found' }
+    }
+  } catch (error) {
+      if (error && error.code == 'ECONNREFUSED') {
+          return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+      } else {
+          return { success: false, message: error }
+      }
+  }
+};
 module.exports = {
   rolecreation,
   roleupdate,
@@ -956,5 +1031,6 @@ module.exports = {
   broadcastMessages,
   proctorAuthCall,
   getDatails,
-  getDatailsApprove
+  getDatailsApprove,
+  fetchStreamStatus
 }
