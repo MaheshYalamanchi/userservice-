@@ -877,6 +877,7 @@ let getDatails = async (params) => {
       }
       let responseData = await invoke.makeHttpCall_roomDataService("post", "findById", getdata);
       if (responseData && responseData.data && responseData.data.statusMessage) {
+          console.log("finding response=========>>>>>",JSON.stringify(responseData.data.statusMessage))
           responseData.data.statusMessage.id = responseData.data.statusMessage._id;
           delete responseData.data.statusMessage._id;
           params.responseData = responseData;
@@ -899,6 +900,7 @@ let getDatails = async (params) => {
 
 let getDatailsApprove = async (params) => {
   try {  
+    console.log("finding params=========>>>>>",JSON.stringify(params))
       if(params.body.body.error !== null){
           params.body.body.createdAt = new Date()
           const data = {
