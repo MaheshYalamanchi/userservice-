@@ -18,6 +18,11 @@ spec:
         - name: userservice
           image: proctorprod.azurecr.io/userservice:$tag
           imagePullPolicy: Always
+          ports:
+            - containerPort: 3005
+          volumeMounts:
+          - name: 'data'
+            mountPath: '/mnt'
           env:
             - name: DATA_SERVICE_ENDPOINT
               valueFrom:
@@ -39,11 +44,16 @@ spec:
                 secretKeyRef:
                   name: proctor-prod-env
                   key: ROOMS_DATA_SERVICE_ENDPOINT
-            - name: MAPREDUCE_URL
+            - name: DATABASENAME
               valueFrom:
                 secretKeyRef:
                   name: proctor-prod-env
-                  key: MAPREDUCE_URL
+                  key: DATABASENAME
+            - name: COMMON_DATA_SERVICE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: proctor-prod-env
+                  key: COMMON_DATA_SERVICE_ENDPOINT
       imagePullSecrets:
         - name: mysecret
       nodeSelector:
