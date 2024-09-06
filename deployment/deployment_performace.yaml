@@ -20,9 +20,6 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3005
-          volumeMounts:
-          - name: 'data'
-            mountPath: '/mnt'
           env:
             - name: DATA_SERVICE_ENDPOINT
               valueFrom:
