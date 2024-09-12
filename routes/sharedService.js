@@ -757,6 +757,10 @@ let proctorAuthCall = async (params) => {
           console.log("Auth Token========>>>>",params.authorization)
           return { success: false, message: 'Authorization token missing.' }
       }
+      let token  = params?.authorization.split(" ")
+      if(!token[1] || token[1].includes('${')){
+          return { success: false, message: 'Authorization token missing.' }
+      }
       var decodeToken = jwt_decode(params.authorization);
       // let tenantResponse;
       // if(decodeToken && decodeToken.tenantId ){
@@ -838,6 +842,10 @@ let getDatails = async (params) => {
   try {  
       if(!params?.body?.authorization){
           console.log("Next Token========>>>>",params.body.authorization)
+          return { success: false, message: 'Authorization token missing.' }
+      }
+      let token  = params?.authorization.split(" ")
+      if(!token[1] || token[1].includes('${')){
           return { success: false, message: 'Authorization token missing.' }
       }
       decodeToken = jwt_decode(params.body.authorization)
@@ -941,6 +949,10 @@ let fetchStreamStatus = async (params) => {
       console.log("fetchStreamStatus Token========>>>>",params.authorization)
       return { success: false, message: 'Authorization token missing.' }
     }
+    let token  = params?.authorization.split(" ")
+      if(!token[1] || token[1].includes('${')){
+          return { success: false, message: 'Authorization token missing.' }
+      }
     var decodeToken = jwt_decode(params.authorization);
     let tenantResponse;
     if(decodeToken && decodeToken.tenantId ){
