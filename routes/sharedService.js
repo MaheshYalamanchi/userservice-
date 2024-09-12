@@ -844,7 +844,7 @@ let getDatails = async (params) => {
           console.log("Next Token========>>>>",params.body.authorization)
           return { success: false, message: 'Authorization token missing.' }
       }
-      let token  = params?.authorization.split(" ")
+      let token  = params?.body?.authorization.split(" ")
       if(!token[1] || token[1].includes('${')){
           return { success: false, message: 'Authorization token missing.' }
       }
