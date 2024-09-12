@@ -11,7 +11,11 @@ let reportlog = async (params) => {
       console.log("Me2 Token========>>>>",params.authorization)
       return { success: false, message: 'Authorization token missing.' }
     }
-    let decodeToken = jwt_decode(params.authorization);
+    let token  = params?.authorization.split(" ")
+    if(!token[1] || token[1].includes('${')){
+        return { success: false, message: 'Authorization token missing.' }
+    }
+    // let decodeToken = jwt_decode(params.authorization);
     let url;
     let database;
     // let tenantResponse;
