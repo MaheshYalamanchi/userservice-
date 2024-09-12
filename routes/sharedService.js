@@ -774,7 +774,7 @@ let proctorAuthCall = async (params) => {
       if(decodeToken && (decodeToken.room=="check")){
           let response = await tokenService.authCheckToken(decodeToken);
           if(response){
-              var token = jwt_decode(response);
+              // var token = jwt_decode(response);
               if (decodeToken.exp){
                   return {success: true, message: { exp :token.exp, iat: token.iat, id: token.id,
                       role: token.role,token: response,room:token.room}
