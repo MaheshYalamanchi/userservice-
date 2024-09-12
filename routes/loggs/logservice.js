@@ -11,22 +11,26 @@ let reportlog = async (params) => {
       console.log("Me2 Token========>>>>",params.authorization)
       return { success: false, message: 'Authorization token missing.' }
     }
-    let decodeToken = jwt_decode(params.authorization);
+    let token  = params?.authorization.split(" ")
+    if(!token[1] || token[1].includes('${')){
+        return { success: false, message: 'Authorization token missing.' }
+    }
+    // let decodeToken = jwt_decode(params.authorization);
     let url;
     let database;
-    let tenantResponse;
-    if (decodeToken && decodeToken.tenantId) {
-      tenantResponse = await _schedule.tenantResponse(decodeToken);
-      if (tenantResponse && tenantResponse.success) {
-        url = tenantResponse.message.connectionString + '/' + tenantResponse.message.databaseName;
-        database = tenantResponse.message.databaseName;
-      } else {
-        return { success: false, message: tenantResponse.message }
-      }
-    } else {
+    // let tenantResponse;
+    // if (decodeToken && decodeToken.tenantId) {
+    //   tenantResponse = await _schedule.tenantResponse(decodeToken);
+    //   if (tenantResponse && tenantResponse.success) {
+    //     url = tenantResponse.message.connectionString + '/' + tenantResponse.message.databaseName;
+    //     database = tenantResponse.message.databaseName;
+    //   } else {
+    //     return { success: false, message: tenantResponse.message }
+    //   }
+    // } else {
       url = process.env.MONGO_URI + '/' + process.env.DATABASENAME;
       database = process.env.DATABASENAME;
-    }
+    // }
     let jsondata = {
       b1: "Browser not supported",
       b2: "Focus changed to a different window",
@@ -59,7 +63,7 @@ let reportlog = async (params) => {
         room: result.data.statusMessage,
         metrics: jsondata,
         peak: params,
-        tenantResponse: tenantResponse
+        // tenantResponse: tenantResponse
       }
       let status = await shared.timeincidents(data)
       if (status && status.message) {
@@ -100,7 +104,7 @@ let reportlog = async (params) => {
           room: result.data.statusMessage,
           metrics: jsondata,
           peak: params,
-          tenantResponse: tenantResponse
+          // tenantResponse: tenantResponse
         }
         let status = await shared.time(data)
         if (status && status.message) {
