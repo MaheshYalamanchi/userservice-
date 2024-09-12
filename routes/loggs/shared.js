@@ -187,7 +187,7 @@ let time = async (params) => {
 };
 let filename = async (params) => {
     try {
-        let decodeToken = jwt_decode(params.authorization);
+        // let decodeToken = jwt_decode(params.authorization);
         let url;
         let database;
         // let tenantResponse;
