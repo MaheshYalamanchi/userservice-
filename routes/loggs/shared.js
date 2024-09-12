@@ -8,13 +8,13 @@ let timeincidents = async (params) => {
     try {
         let url;
         let database;
-        if(params && params.tenantResponse && params.tenantResponse.success){
-            url = params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName;
-            database = params.tenantResponse.message.databaseName;
-        } else {
+        // if(params && params.tenantResponse && params.tenantResponse.success){
+        //     url = params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName;
+        //     database = params.tenantResponse.message.databaseName;
+        // } else {
             url = process.env.MONGO_URI+'/'+process.env.DATABASENAME;
             database = process.env.DATABASENAME;
-        }
+        // }
         if (params.peak.peak) {
             var metrics = params.peak.peak
             var value = params.metrics[metrics];
@@ -129,13 +129,13 @@ let time = async (params) => {
     try {
         let url;
         let database;
-        if(params && params.tenantResponse && params.tenantResponse.success){
-            url = params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName;
-            database = params.tenantResponse.message.databaseName;
-        } else {
+        // if(params && params.tenantResponse && params.tenantResponse.success){
+        //     url = params.tenantResponse.message.connectionString+'/'+params.tenantResponse.message.databaseName;
+        //     database = params.tenantResponse.message.databaseName;
+        // } else {
             url = process.env.MONGO_URI+'/'+process.env.DATABASENAME;
             database = process.env.DATABASENAME;
-        }
+        // }
         if (params.peak.submittime) {
             var time = params.peak.submittime
             var exam = "Exam submited"
@@ -187,22 +187,22 @@ let time = async (params) => {
 };
 let filename = async (params) => {
     try {
-        let decodeToken = jwt_decode(params.authorization);
+        // let decodeToken = jwt_decode(params.authorization);
         let url;
         let database;
-        let tenantResponse;
-        if(decodeToken && decodeToken.tenantId){
-            tenantResponse = await getTennant(decodeToken);
-            if (tenantResponse && tenantResponse.success){
-                url = tenantResponse.message.connectionString+'/'+tenantResponse.message.databaseName;
-                database = tenantResponse.message.databaseName;
-            } else {
-                return { success: false, message: tenantResponse.message }
-            }
-        } else {
+        // let tenantResponse;
+        // if(decodeToken && decodeToken.tenantId){
+        //     tenantResponse = await getTennant(decodeToken);
+        //     if (tenantResponse && tenantResponse.success){
+        //         url = tenantResponse.message.connectionString+'/'+tenantResponse.message.databaseName;
+        //         database = tenantResponse.message.databaseName;
+        //     } else {
+        //         return { success: false, message: tenantResponse.message }
+        //     }
+        // } else {
             url = process.env.MONGO_URI+'/'+process.env.DATABASENAME;
             database = process.env.DATABASENAME;
-        }
+        // }
         var getdata = {
             url: url,
             database: database,
@@ -289,105 +289,105 @@ let filename = async (params) => {
     }
 };
 
-let tenantResponse = async (params) => {
-    try {
-        // const filePath = path.join(__dirname, 'data.json');
-        const filePath = path.join("/mnt/", 'data.json');
-        if(fs.existsSync(filePath)) {
-            let fsReadResponse = await fsRead(filePath)
-            if(fsReadResponse && fsReadResponse.success){
-                let JsonData = JSON.parse(fsReadResponse.message);
-                let message;
-                JsonData.forEach(async element => {
-                    if(element.tenantId == params.tenantId){
-                        message = element;
-                    } 
-                });
-                if(message){
-                    return { success: true, message: message }
-                } else {
-                    if(params.tenantId){
-                        var getdata = {
-                            url: process.env.MONGO_URI+"/masterdb",
-                            database:"masterdb",
-                            model: "tenantuser",
-                            docType: 1,
-                            query:
-                            [
-                                {$match:{tenantId: params.tenantId}},
-                                {$lookup:{
-                                    from: 'databasemaster',
-                                    localField: 'tenantId',
-                                    foreignField: 'tenantId',
-                                    as: 'data',
-                                }},
-                                { $unwind: { path: "$data", preserveNullAndEmptyArrays: true } },
-                                { $project: {_id:0,tenantId:"$tenantId",connectionString:"$data.connectionString",databaseName:"$data.databaseName"}}
-                            ]
-                        };
-                        let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-                        if (responseData && responseData.data && responseData.data.statusMessage) {
-                            let fsReadResponse = await fsRead(filePath);
-                            if(fsReadResponse && fsReadResponse.success){
-                                let JsonData = JSON.parse(fsReadResponse.message);
-                                JsonData.push(responseData.data.statusMessage[0]);
-                                let fsWriteResponse = await fsWrite(filePath,JsonData);
-                                if(fsWriteResponse && fsWriteResponse.success){
-                                return { success: true, message: responseData.data.statusMessage[0] }
-                                }
-                            }
-                        } else {
-                            return { success: false, message: 'Provide proper tenant params' }
-                        }
-                    }  else {
-                        return { success: false, message: 'Provide proper tenantId' }
-                    }
-                    return { success: false, message: message }
-                }
-            }
-        } else {
-            if(params.tenantId){
-                var getdata = {
-                    url: process.env.MONGO_URI+"/masterdb",
-                    database:"masterdb",
-                    model: "tenantuser",
-                    docType: 1,
-                    query:
-                    [
-                        {$match:{tenantId: params.tenantId}},
-                        {$lookup:{
-                            from: 'databasemaster',
-                            localField: 'tenantId',
-                            foreignField: 'tenantId',
-                            as: 'data',
-                         }},
-                         { $unwind: { path: "$data", preserveNullAndEmptyArrays: true } },
-                         { $project: {_id:0,tenantId:"$tenantId",connectionString:"$data.connectionString",databaseName:"$data.databaseName"}}
-                    ]
-                };
-                let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
-                if (responseData && responseData.data && responseData.data.statusMessage) {
-                    let jsonData = []
-                    jsonData.push(responseData.data.statusMessage[0])
-                    let fsWriteResponse = await fsWrite(filePath,jsonData);
-                    if(fsWriteResponse && fsWriteResponse.success){
-                        return { success: true, message: responseData.data.statusMessage[0]}
-                    }
-                } else {
-                    return { success: false, message: 'Provide proper tenant params' };
-                }
-            }  else {
-                return { success: false, message: 'Provide proper tenantId' };
-            }
-        }
-    } catch (error) {
-        if (error && error.code == 'ECONNREFUSED') {
-            return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
-        } else {
-            return { success: false, message: error }
-        }
-    }
-};
+// let tenantResponse = async (params) => {
+//     try {
+//         // const filePath = path.join(__dirname, 'data.json');
+//         const filePath = path.join("/mnt/", 'data.json');
+//         if(fs.existsSync(filePath)) {
+//             let fsReadResponse = await fsRead(filePath)
+//             if(fsReadResponse && fsReadResponse.success){
+//                 let JsonData = JSON.parse(fsReadResponse.message);
+//                 let message;
+//                 JsonData.forEach(async element => {
+//                     if(element.tenantId == params.tenantId){
+//                         message = element;
+//                     } 
+//                 });
+//                 if(message){
+//                     return { success: true, message: message }
+//                 } else {
+//                     if(params.tenantId){
+//                         var getdata = {
+//                             url: process.env.MONGO_URI+"/masterdb",
+//                             database:"masterdb",
+//                             model: "tenantuser",
+//                             docType: 1,
+//                             query:
+//                             [
+//                                 {$match:{tenantId: params.tenantId}},
+//                                 {$lookup:{
+//                                     from: 'databasemaster',
+//                                     localField: 'tenantId',
+//                                     foreignField: 'tenantId',
+//                                     as: 'data',
+//                                 }},
+//                                 { $unwind: { path: "$data", preserveNullAndEmptyArrays: true } },
+//                                 { $project: {_id:0,tenantId:"$tenantId",connectionString:"$data.connectionString",databaseName:"$data.databaseName"}}
+//                             ]
+//                         };
+//                         let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+//                         if (responseData && responseData.data && responseData.data.statusMessage) {
+//                             let fsReadResponse = await fsRead(filePath);
+//                             if(fsReadResponse && fsReadResponse.success){
+//                                 let JsonData = JSON.parse(fsReadResponse.message);
+//                                 JsonData.push(responseData.data.statusMessage[0]);
+//                                 let fsWriteResponse = await fsWrite(filePath,JsonData);
+//                                 if(fsWriteResponse && fsWriteResponse.success){
+//                                 return { success: true, message: responseData.data.statusMessage[0] }
+//                                 }
+//                             }
+//                         } else {
+//                             return { success: false, message: 'Provide proper tenant params' }
+//                         }
+//                     }  else {
+//                         return { success: false, message: 'Provide proper tenantId' }
+//                     }
+//                     return { success: false, message: message }
+//                 }
+//             }
+//         } else {
+//             if(params.tenantId){
+//                 var getdata = {
+//                     url: process.env.MONGO_URI+"/masterdb",
+//                     database:"masterdb",
+//                     model: "tenantuser",
+//                     docType: 1,
+//                     query:
+//                     [
+//                         {$match:{tenantId: params.tenantId}},
+//                         {$lookup:{
+//                             from: 'databasemaster',
+//                             localField: 'tenantId',
+//                             foreignField: 'tenantId',
+//                             as: 'data',
+//                          }},
+//                          { $unwind: { path: "$data", preserveNullAndEmptyArrays: true } },
+//                          { $project: {_id:0,tenantId:"$tenantId",connectionString:"$data.connectionString",databaseName:"$data.databaseName"}}
+//                     ]
+//                 };
+//                 let responseData = await invoke.makeHttpCall("post", "aggregate", getdata);
+//                 if (responseData && responseData.data && responseData.data.statusMessage) {
+//                     let jsonData = []
+//                     jsonData.push(responseData.data.statusMessage[0])
+//                     let fsWriteResponse = await fsWrite(filePath,jsonData);
+//                     if(fsWriteResponse && fsWriteResponse.success){
+//                         return { success: true, message: responseData.data.statusMessage[0]}
+//                     }
+//                 } else {
+//                     return { success: false, message: 'Provide proper tenant params' };
+//                 }
+//             }  else {
+//                 return { success: false, message: 'Provide proper tenantId' };
+//             }
+//         }
+//     } catch (error) {
+//         if (error && error.code == 'ECONNREFUSED') {
+//             return { success: false, message: globalMsg[0].MSG000, status: globalMsg[0].status }
+//         } else {
+//             return { success: false, message: error }
+//         }
+//     }
+// };
 
 let getTennant = async(params) => {
     try {
@@ -453,6 +453,6 @@ module.exports = {
     timeincidents,
     time,
     filename,
-    tenantResponse,
+    // tenantResponse,
     getTennant
 }
